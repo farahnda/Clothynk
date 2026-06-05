@@ -1,0 +1,311 @@
+{% load crm_tags %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Clothynk{% endblock %} | Clothynk</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --sidebar-w: 250px;
+      --brand: #0A0A0A;
+      --accent: #6C63FF;
+      --accent2: #FF6584;
+      --bronze: #CD7F32;
+      --silver: #9E9E9E;
+      --gold: #FFC107;
+      --platinum: #B0BEC5;
+      --success-soft: #D1FAE5;
+      --warning-soft: #FEF3C7;
+      --danger-soft: #FEE2E2;
+      --bg: #F4F5F7;
+      --card-bg: #FFFFFF;
+      --sidebar-bg: #0A0A0A;
+      --sidebar-text: rgba(255,255,255,0.65);
+      --sidebar-active: #FFFFFF;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: #1A1A2E;
+    }
+    code, .mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* ── SIDEBAR ── */
+    #sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--sidebar-bg);
+      position: fixed;
+      left: 0; top: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      transition: transform .25s ease;
+    }
+    .sidebar-brand {
+      padding: 24px 20px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .sidebar-brand .brand-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+    .sidebar-brand .brand-sub {
+      font-size: 0.65rem;
+      color: var(--sidebar-text);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+    .sidebar-nav { padding: 16px 12px; flex: 1; }
+    .nav-section-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.3);
+      padding: 8px 8px 4px;
+      margin-top: 8px;
+    }
+    .sidebar-nav .nav-link {
+      color: var(--sidebar-text);
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 2px;
+      transition: background .15s, color .15s;
+    }
+    .sidebar-nav .nav-link:hover {
+      background: rgba(255,255,255,0.07);
+      color: #fff;
+    }
+    .sidebar-nav .nav-link.active {
+      background: var(--accent);
+      color: #fff;
+    }
+    .sidebar-nav .nav-link i { font-size: 1rem; width: 20px; }
+    .sidebar-footer {
+      padding: 12px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .sidebar-footer .nav-link {
+      color: var(--sidebar-text);
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 10px;
+    }
+    .sidebar-footer .nav-link:hover { background: rgba(255,255,255,0.07); color: #fff; }
+
+    /* ── MAIN ── */
+    #main {
+      margin-left: var(--sidebar-w);
+      min-height: 100vh;
+    }
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid #E8ECF0;
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .topbar h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1A1A2E;
+      margin: 0;
+    }
+    .topbar .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #555;
+    }
+    .user-avatar {
+      width: 34px; height: 34px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .page-content { padding: 28px 32px; }
+
+    /* ── CARDS ── */
+    .card {
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.04);
+      background: var(--card-bg);
+    }
+    .card-header {
+      background: transparent;
+      border-bottom: 1px solid #F0F0F0;
+      padding: 16px 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .stat-card {
+      border-radius: 16px;
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.04);
+    }
+    .stat-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .stat-label { font-size: 0.75rem; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-value { font-size: 1.5rem; font-weight: 800; color: #1A1A2E; line-height: 1.1; }
+    .stat-sub { font-size: 0.75rem; color: #aaa; margin-top: 2px; }
+
+    /* ── TIER BADGES ── */
+    .tier-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .tier-bronze { background: #FFF3E0; color: var(--bronze); }
+    .tier-silver { background: #F5F5F5; color: var(--silver); }
+    .tier-gold { background: #FFFDE7; color: #F57F17; }
+    .tier-platinum { background: #ECEFF1; color: #546E7A; }
+
+    /* ── TABLES ── */
+    .table { font-size: 0.875rem; }
+    .table th {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: #888;
+      font-weight: 700;
+      border-bottom: 1px solid #F0F0F0;
+    }
+    .table td { vertical-align: middle; border-color: #F8F8F8; }
+    .table tbody tr:hover { background: #FAFBFF; }
+
+    /* ── ALERTS ── */
+    .alert { border: none; border-radius: 10px; font-size: 0.875rem; }
+
+    /* ── PROGRESS ── */
+    .progress { height: 6px; border-radius: 10px; background: #F0F0F0; }
+    .progress-bar { border-radius: 10px; }
+
+    /* ── MISC ── */
+    .btn-accent {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      font-weight: 600;
+      border-radius: 10px;
+    }
+    .btn-accent:hover { background: #5A52D5; color: #fff; }
+    .avatar-circle {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 0.8rem; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .prediction-bar { height: 8px; border-radius: 10px; }
+    .churn-high { color: #EF4444; }
+    .churn-medium { color: #F59E0B; }
+    .churn-low { color: #10B981; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-name">✦ Clothynk</div>
+    <div class="brand-sub">Fashion CRM</div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section-label">Menu Utama</div>
+    <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+      <i class="bi bi-grid-1x2-fill"></i> Dashboard
+    </a>
+    <a href="{% url 'customer_list' %}" class="nav-link {% if 'customer' in request.resolver_match.url_name %}active{% endif %}">
+      <i class="bi bi-people-fill"></i> Pelanggan
+    </a>
+    <a href="{% url 'transaction_list' %}" class="nav-link {% if 'transaction' in request.resolver_match.url_name %}active{% endif %}">
+      <i class="bi bi-receipt"></i> Transaksi
+    </a>
+
+    <div class="nav-section-label">Program</div>
+    <a href="{% url 'loyalty_list' %}" class="nav-link {% if request.resolver_match.url_name == 'loyalty_list' %}active{% endif %}">
+      <i class="bi bi-award-fill"></i> Loyalty Program
+    </a>
+    <a href="{% url 'campaign_list' %}" class="nav-link {% if 'campaign' in request.resolver_match.url_name %}active{% endif %}">
+      <i class="bi bi-megaphone-fill"></i> Campaign & Promo
+    </a>
+
+    <div class="nav-section-label">Analitik</div>
+    <a href="{% url 'analytics' %}" class="nav-link {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}">
+      <i class="bi bi-graph-up-arrow"></i> Prediksi Perilaku
+    </a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="px-2 pb-1 text-white" style="font-size:0.7rem; opacity:0.4;">Login sebagai</div>
+    <div class="px-2 pb-2 text-white" style="font-size:0.82rem; font-weight:600;">{{ request.user.username }}</div>
+    <a href="{% url 'logout' %}" class="nav-link"><i class="bi bi-box-arrow-left"></i> Keluar</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <div class="topbar">
+    <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+    <div class="user-badge">
+      <div class="user-avatar">{{ request.user.username|first|upper }}</div>
+      Superadmin
+    </div>
+  </div>
+
+  <div class="page-content">
+    {% if messages %}
+      {% for msg in messages %}
+        <div class="alert alert-{{ msg.tags }} alert-dismissible fade show mb-3" role="alert">
+          {{ msg }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

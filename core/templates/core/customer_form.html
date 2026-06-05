@@ -1,0 +1,80 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:800px">
+  <div class="card-header">{{ title }}</div>
+  <div class="p-4">
+    <form method="post">
+      {% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label fw-600">Customer ID</label>{{ form.customer_id }}
+          {% if form.customer_id.errors %}<div class="text-danger" style="font-size:.8rem">{{ form.customer_id.errors }}</div>{% endif %}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-600">Nama</label>{{ form.name }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-600">Umur</label>{{ form.age }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-600">Gender</label>{{ form.gender }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-600">Income Level</label>{{ form.income_level }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-600">Marital Status</label>{{ form.marital_status }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-600">Pendidikan</label>{{ form.education_level }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-600">Occupation Level</label>{{ form.occupation }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-600">Lokasi</label>{{ form.location }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-600">Email</label>{{ form.email }}
+          {% if form.email.errors %}<div class="text-danger" style="font-size:.8rem">{{ form.email.errors }}</div>{% endif %}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-600">No. Telepon</label>{{ form.phone }}
+        </div>
+        <div class="col-12"><hr class="my-1"><div class="fw-700 mb-2" style="font-size:.8rem;text-transform:uppercase;letter-spacing:1px;color:#888">Preferensi Belanja</div></div>
+        <div class="col-md-6">
+          <label class="form-label fw-600">Kategori Pembelian</label>{{ form.purchase_category }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-600">Channel</label>{{ form.purchase_channel }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-600">Niat Beli</label>{{ form.purchase_intent }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-600">Perangkat</label>{{ form.device_used }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-600">Metode Pembayaran</label>{{ form.payment_method }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-600">Preferensi Pengiriman</label>{{ form.shipping_preference }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-600">Pengaruh Media Sosial</label>{{ form.social_media_influence }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-600">Sensitivitas Diskon</label>{{ form.discount_sensitivity }}
+        </div>
+      </div>
+      <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-accent px-4">Simpan</button>
+        <a href="{% url 'customer_list' %}" class="btn btn-outline-secondary">Batal</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

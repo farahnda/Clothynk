@@ -1,0 +1,54 @@
+{% extends 'core/base.html' %}
+{% block title %}Loyalty Program{% endblock %}
+{% block page_title %}Loyalty Program{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#FFF3E0"><i class="bi bi-award-fill" style="color:#CD7F32"></i></div><div><div class="stat-label">Bronze</div><div class="stat-value">{{ tier_counts.bronze }}</div></div></div></div>
+  <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#F5F5F5"><i class="bi bi-award-fill" style="color:#9E9E9E"></i></div><div><div class="stat-label">Silver</div><div class="stat-value">{{ tier_counts.silver }}</div></div></div></div>
+  <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#FFFDE7"><i class="bi bi-award-fill" style="color:#FFC107"></i></div><div><div class="stat-label">Gold</div><div class="stat-value">{{ tier_counts.gold }}</div></div></div></div>
+  <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#ECEFF1"><i class="bi bi-award-fill" style="color:#546E7A"></i></div><div><div class="stat-label">Platinum</div><div class="stat-value">{{ tier_counts.platinum }}</div></div></div></div>
+</div>
+
+<div class="d-flex gap-2 mb-3">
+  <a href="?" class="btn btn-sm {% if not tier %}btn-accent{% else %}btn-outline-secondary{% endif %}">Semua</a>
+  <a href="?tier=bronze"   class="btn btn-sm {% if tier == 'bronze'   %}btn-accent{% else %}btn-outline-secondary{% endif %}">Bronze</a>
+  <a href="?tier=silver"   class="btn btn-sm {% if tier == 'silver'   %}btn-accent{% else %}btn-outline-secondary{% endif %}">Silver</a>
+  <a href="?tier=gold"     class="btn btn-sm {% if tier == 'gold'     %}btn-accent{% else %}btn-outline-secondary{% endif %}">Gold</a>
+  <a href="?tier=platinum" class="btn btn-sm {% if tier == 'platinum' %}btn-accent{% else %}btn-outline-secondary{% endif %}">Platinum</a>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead>
+        <tr><th>Pelanggan</th><th>Tier</th><th>Poin</th><th>Total Belanja</th><th>Member</th><th>Progress</th></tr>
+      </thead>
+      <tbody>
+        {% for l in loyalties %}
+        <tr>
+          <td>
+            <a href="{% url 'customer_detail' l.customer.pk %}" class="text-decoration-none fw-600">{{ l.customer.name }}</a>
+            <div class="text-muted mono" style="font-size:.72rem">{{ l.customer.customer_id }}</div>
+          </td>
+          <td><span class="tier-badge tier-{{ l.tier }}">● {{ l.get_tier_display }}</span></td>
+          <td class="fw-600">{{ l.points }}</td>
+          <td>${{ l.total_spending|floatformat:2 }}</td>
+          <td>{% if l.is_member %}<span class="badge bg-success">Ya</span>{% else %}<span class="text-muted">—</span>{% endif %}</td>
+          <td style="width:150px">
+            {% with info=l.get_next_tier_info %}
+            {% if info.next_tier %}
+              <div class="progress"><div class="progress-bar" style="width:{{ info.progress }}%;background:{{ l.get_tier_color }}"></div></div>
+              <div class="text-muted" style="font-size:.7rem">{{ info.progress|floatformat:0 }}% → {{ info.next_tier|capfirst }}</div>
+            {% else %}
+              <span class="text-muted" style="font-size:.75rem">Platinum 🏆</span>
+            {% endif %}
+            {% endwith %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

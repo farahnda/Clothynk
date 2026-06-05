@@ -1,0 +1,41 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="mb-3">
+  <a href="{% url 'campaign_list' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;">← Kembali</a>
+</div>
+<div class="card" style="max-width:600px;">
+  <div class="card-header">{{ title }}</div>
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+      <div class="row g-3">
+        <div class="col-12">{{ form.name.label_tag }}{{ form.name }}</div>
+        <div class="col-12">{{ form.description.label_tag }}{{ form.description }}</div>
+        <div class="col-md-6">{{ form.target_tier.label_tag }}{{ form.target_tier }}</div>
+        <div class="col-md-6">{{ form.discount_percent.label_tag }}{{ form.discount_percent }}</div>
+        <div class="col-12">{{ form.voucher_code.label_tag }}{{ form.voucher_code }}</div>
+        <div class="col-md-6">{{ form.start_date.label_tag }}{{ form.start_date }}</div>
+        <div class="col-md-6">{{ form.end_date.label_tag }}{{ form.end_date }}</div>
+        <div class="col-12">
+          <div class="form-check">
+            {{ form.is_active }}
+            <label class="form-check-label" for="{{ form.is_active.id_for_label }}" style="font-size:0.85rem;">
+              Aktifkan Campaign ini
+            </label>
+          </div>
+        </div>
+      </div>
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger mt-3">{{ form.non_field_errors }}</div>
+      {% endif %}
+      <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-accent px-4">💾 Simpan</button>
+        <a href="{% url 'campaign_list' %}" class="btn btn-outline-secondary">Batal</a>
+      </div>
+    </form>
+  </div>
+</div>
+<style>label { font-size:0.78rem; font-weight:600; color:#555; display:block; margin-bottom:5px; }</style>
+{% endblock %}

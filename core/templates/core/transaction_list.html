@@ -1,0 +1,51 @@
+{% extends 'core/base.html' %}
+{% block title %}Transaksi{% endblock %}
+{% block page_title %}Daftar Transaksi{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="stat-card" style="border-radius:12px;padding:14px 20px">
+    <div>
+      <div class="stat-label">Total Pendapatan</div>
+      <div class="stat-value" style="font-size:1.2rem">${{ total|floatformat:2 }}</div>
+    </div>
+  </div>
+  <a href="{% url 'transaction_add' %}" class="btn btn-accent"><i class="bi bi-plus-lg me-1"></i>Tambah Transaksi</a>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>Pelanggan</th>
+          <th>Tanggal</th>
+          <th>Jumlah</th>
+          <th>Pembayaran</th>
+          <th>Frekuensi</th>
+          <th>Kepuasan</th>
+          <th>Diskon</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in transactions %}
+        <tr>
+          <td>
+            <a href="{% url 'customer_detail' t.customer.pk %}" class="text-decoration-none fw-600">{{ t.customer.name }}</a>
+            <div class="text-muted mono" style="font-size:.72rem">{{ t.customer.customer_id }}</div>
+          </td>
+          <td>{{ t.date|date:"d M Y" }}</td>
+          <td class="fw-600">${{ t.amount|floatformat:2 }}</td>
+          <td>{{ t.payment_method }}</td>
+          <td>{{ t.frequency }}x</td>
+          <td>{{ t.satisfaction }}/10</td>
+          <td>{% if t.discount_used %}<span class="badge bg-success">Ya</span>{% else %}<span class="text-muted">—</span>{% endif %}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center text-muted py-4">Belum ada transaksi.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'core/base.html' %}
+{% load crm_tags %}
+{% block title %}Campaign & Promo{% endblock %}
+{% block page_title %}Campaign & Promo Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <span class="badge" style="background:#D1FAE5;color:#065F46;font-size:0.8rem;">{{ active_count }} campaign aktif</span>
+  <a href="{% url 'campaign_add' %}" class="btn btn-accent"><i class="bi bi-plus-lg me-1"></i>Buat Campaign</a>
+</div>
+
+<div class="row g-3">
+  {% for campaign in campaigns %}
+  <div class="col-md-6">
+    <div class="card h-100" style="{% if campaign.is_ongoing %}border-left:4px solid #10B981;{% else %}border-left:4px solid #E0E0E0;{% endif %}">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <h6 class="fw-bold mb-0">{{ campaign.name }}</h6>
+          {% if campaign.is_ongoing %}
+            <span class="badge" style="background:#D1FAE5;color:#065F46;font-size:0.7rem;">🟢 Aktif</span>
+          {% elif campaign.is_active %}
+            <span class="badge" style="background:#FEF3C7;color:#92400E;font-size:0.7rem;">⏳ Belum Mulai / Selesai</span>
+          {% else %}
+            <span class="badge bg-light text-secondary" style="font-size:0.7rem;">⚫ Nonaktif</span>
+          {% endif %}
+        </div>
+        <p class="text-muted" style="font-size:0.82rem;">{{ campaign.description|truncatechars:100 }}</p>
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <span class="badge bg-light text-dark" style="font-size:0.72rem;">
+            🎯 Target: {{ campaign.get_target_tier_display }}
+          </span>
+          <span class="badge bg-light text-dark" style="font-size:0.72rem;">
+            🏷️ Diskon {{ campaign.discount_percent }}%
+          </span>
+          {% if campaign.voucher_code %}
+          <span class="badge mono" style="background:#EEF2FF;color:#6C63FF;font-size:0.72rem;">
+            🎟️ {{ campaign.voucher_code }}
+          </span>
+          {% endif %}
+        </div>
+        <div class="d-flex align-items-center justify-content-between">
+          <span style="font-size:0.75rem;color:#888;">
+            📅 {{ campaign.start_date|date:"d M Y" }} – {{ campaign.end_date|date:"d M Y" }}
+          </span>
+          <div class="d-flex gap-1">
+            <a href="{% url 'campaign_detail' campaign.pk %}" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;font-size:0.75rem;">Detail</a>
+            <a href="{% url 'campaign_edit' campaign.pk %}" class="btn btn-sm btn-outline-primary" style="border-radius:8px;font-size:0.75rem;">Edit</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body text-center py-5 text-muted">
+        <div style="font-size:2.5rem;">📣</div>
+        <div class="mt-2">Belum ada campaign. Buat campaign pertamamu!</div>
+        <a href="{% url 'campaign_add' %}" class="btn btn-accent btn-sm mt-2">Buat Campaign</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

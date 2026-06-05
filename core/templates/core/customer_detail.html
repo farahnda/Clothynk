@@ -1,0 +1,135 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ customer.name }}{% endblock %}
+{% block page_title %}Detail Pelanggan{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <a href="{% url 'customer_list' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
+  <div class="d-flex gap-2">
+    <a href="{% url 'customer_edit' customer.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil me-1"></i>Edit</a>
+    <a href="{% url 'customer_delete' customer.pk %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash me-1"></i>Hapus</a>
+  </div>
+</div>
+
+<div class="row g-3">
+  <!-- Profil -->
+  <div class="col-md-4">
+    <div class="card p-4">
+      <div class="text-center mb-3">
+        <div class="avatar-circle mx-auto mb-2" style="width:60px;height:60px;font-size:1.4rem">{{ customer.name|first }}</div>
+        <h5 class="fw-700 mb-0">{{ customer.name }}</h5>
+        <div class="text-muted" style="font-size:.8rem">{{ customer.customer_id }}</div>
+        {% if loyalty %}<span class="tier-badge tier-{{ loyalty.tier }} mt-1">● {{ loyalty.get_tier_display }}</span>{% endif %}
+      </div>
+      <hr>
+      <div class="d-flex flex-column gap-2" style="font-size:.875rem">
+        <div><span class="text-muted">Email:</span> {{ customer.email }}</div>
+        <div><span class="text-muted">Telepon:</span> {{ customer.phone|default:"—" }}</div>
+        <div><span class="text-muted">Umur:</span> {{ customer.age }} tahun</div>
+        <div><span class="text-muted">Gender:</span> {{ customer.gender }}</div>
+        <div><span class="text-muted">Lokasi:</span> {{ customer.location }}</div>
+        <div><span class="text-muted">Income:</span> {{ customer.income_level }}</div>
+        <div><span class="text-muted">Status:</span> {{ customer.marital_status }}</div>
+        <div><span class="text-muted">Pendidikan:</span> {{ customer.education_level }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preferensi & Loyalty -->
+  <div class="col-md-4">
+    <div class="card p-4 mb-3">
+      <div class="card-header px-0 pt-0">Preferensi Belanja</div>
+      <div class="d-flex flex-column gap-2 mt-3" style="font-size:.875rem">
+        <div><span class="text-muted">Kategori:</span> {{ customer.purchase_category }}</div>
+        <div><span class="text-muted">Channel:</span> {{ customer.get_purchase_channel_display }}</div>
+        <div><span class="text-muted">Perangkat:</span> {{ customer.device_used }}</div>
+        <div><span class="text-muted">Pembayaran:</span> {{ customer.payment_method }}</div>
+        <div><span class="text-muted">Pengiriman:</span> {{ customer.get_shipping_preference_display }}</div>
+        <div><span class="text-muted">Niat Beli:</span> {{ customer.get_purchase_intent_display }}</div>
+        <div><span class="text-muted">Media Sosial:</span> {{ customer.get_social_media_influence_display }}</div>
+        <div><span class="text-muted">Sensitivitas Diskon:</span> {{ customer.get_discount_sensitivity_display }}</div>
+      </div>
+    </div>
+    {% if loyalty %}
+    <div class="card p-4">
+      <div class="card-header px-0 pt-0">Loyalty</div>
+      <div class="mt-3">
+        <div class="d-flex justify-content-between mb-1" style="font-size:.85rem">
+          <span class="fw-600">{{ loyalty.points }} poin</span>
+          <span class="text-muted">Total: ${{ loyalty.total_spending|floatformat:2 }}</span>
+        </div>
+        {% with info=loyalty.get_next_tier_info %}
+        {% if info.next_tier %}
+        <div class="progress mb-1"><div class="progress-bar" style="width:{{ info.progress }}%;background:{{ loyalty.get_tier_color }}"></div></div>
+        <div class="text-muted" style="font-size:.75rem">${{ info.remaining|floatformat:0 }} lagi menuju {{ info.next_tier|capfirst }}</div>
+        {% else %}
+        <div class="text-muted" style="font-size:.75rem">Tier tertinggi 🏆</div>
+        {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Prediksi & Stats -->
+  <div class="col-md-4">
+    {% if prediction %}
+    <div class="card p-4 mb-3">
+      <div class="card-header px-0 pt-0">Prediksi Perilaku</div>
+      {% with label=prediction.get_risk_label %}
+      <div class="mt-3">
+        <span class="badge bg-{{ label.0 }} mb-2">{{ label.1 }}</span>
+        <div class="d-flex justify-content-between mb-1" style="font-size:.8rem">
+          <span>Churn</span><span class="fw-600 churn-{{ label.0 }}">{{ prediction.churn_probability|floatformat:1 }}%</span>
+        </div>
+        <div class="progress mb-2"><div class="progress-bar bg-danger prediction-bar" style="width:{{ prediction.churn_probability }}%"></div></div>
+        <div class="d-flex justify-content-between mb-1" style="font-size:.8rem">
+          <span>Beli Lagi</span><span class="fw-600 text-success">{{ prediction.repurchase_probability|floatformat:1 }}%</span>
+        </div>
+        <div class="progress"><div class="progress-bar bg-success prediction-bar" style="width:{{ prediction.repurchase_probability }}%"></div></div>
+      </div>
+      {% endwith %}
+      <a href="{% url 'predict_single' customer.pk %}" class="btn btn-sm btn-outline-primary mt-3 w-100"><i class="bi bi-arrow-clockwise me-1"></i>Refresh Prediksi</a>
+    </div>
+    {% else %}
+    <div class="card p-4 mb-3 text-center">
+      <div class="text-muted mb-2" style="font-size:.875rem">Belum ada prediksi</div>
+      <a href="{% url 'predict_single' customer.pk %}" class="btn btn-sm btn-accent">Jalankan Prediksi</a>
+    </div>
+    {% endif %}
+
+    <div class="card p-4">
+      <div class="card-header px-0 pt-0">Statistik Transaksi</div>
+      <div class="d-flex flex-column gap-2 mt-3" style="font-size:.875rem">
+        <div class="d-flex justify-content-between"><span class="text-muted">Total Transaksi</span><span class="fw-600">{{ freq }}x</span></div>
+        <div class="d-flex justify-content-between"><span class="text-muted">Total Belanja</span><span class="fw-600">${{ total_spending|floatformat:2 }}</span></div>
+        {% if last_txn %}<div class="d-flex justify-content-between"><span class="text-muted">Terakhir</span><span class="fw-600">{{ last_txn.date|date:"d M Y" }}</span></div>{% endif %}
+      </div>
+      <a href="{% url 'transaction_add' %}?customer={{ customer.pk }}" class="btn btn-sm btn-accent mt-3 w-100"><i class="bi bi-plus me-1"></i>Tambah Transaksi</a>
+    </div>
+  </div>
+</div>
+
+<!-- Riwayat Transaksi -->
+{% if transactions %}
+<div class="card mt-3">
+  <div class="card-header">Riwayat Transaksi Terakhir</div>
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead><tr><th>Tanggal</th><th>Jumlah</th><th>Pembayaran</th><th>Diskon</th><th>Kepuasan</th></tr></thead>
+      <tbody>
+        {% for t in transactions %}
+        <tr>
+          <td>{{ t.date|date:"d M Y" }}</td>
+          <td class="fw-600">${{ t.amount|floatformat:2 }}</td>
+          <td>{{ t.payment_method }}</td>
+          <td>{% if t.discount_used %}<span class="badge bg-success-soft text-success">Ya</span>{% else %}—{% endif %}</td>
+          <td>{{ t.satisfaction }}/10</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
