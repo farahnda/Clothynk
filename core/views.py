@@ -136,9 +136,9 @@ def customer_add(request):
     form = CustomerForm(request.POST or None)
     if form.is_valid():
         customer = form.save()
-        messages.success(request, f'Pelanggan {customer.name} berhasil ditambahkan!')
+        messages.success(request, f'Customer {customer.name} added successfully!')
         return redirect('customer_detail', pk=customer.pk)
-    return render(request, 'core/customer_form.html', {'form': form, 'title': 'Tambah Pelanggan'})
+    return render(request, 'core/customer_form.html', {'form': form, 'title': 'Add Customer'})
 
 
 @login_required
@@ -147,20 +147,35 @@ def customer_edit(request, pk):
     form = CustomerForm(request.POST or None, instance=customer)
     if form.is_valid():
         form.save()
-        messages.success(request, 'Data pelanggan berhasil diperbarui!')
+        messages.success(request, 'Customer data updated successfully!')
         return redirect('customer_detail', pk=customer.pk)
-    return render(request, 'core/customer_form.html', {'form': form, 'title': 'Edit Pelanggan', 'customer': customer})
+    return render(request, 'core/customer_form.html', {'form': form, 'title': 'Edit Customer', 'customer': customer})
 
 
 @login_required
 def customer_delete(request, pk):
     customer = get_object_or_404(Customer, pk=pk)
+
     if request.method == 'POST':
         name = customer.name
         customer.delete()
-        messages.success(request, f'Pelanggan {name} berhasil dihapus.')
+
+        messages.success(
+            request,
+            f'Customer "{name}" was deleted successfully.'
+        )
+
         return redirect('customer_list')
-    return render(request, 'core/customer_confirm_delete.html', {'customer': customer})
+
+    return redirect('customer_detail', pk=pk)
+# def customer_delete(request, pk):
+#     customer = get_object_or_404(Customer, pk=pk)
+#     if request.method == 'POST':
+#         name = customer.name
+#         customer.delete()
+#         messages.success(request, f'Customer {name} deleted successfully.')
+#         return redirect('customer_list')
+#     return render(request, 'core/customer_confirm_delete.html', {'customer': customer})
 
 
 # ─── TRANSAKSI ───────────────────────────────────────────────────────────────
@@ -180,9 +195,9 @@ def transaction_add(request):
     form = TransactionForm(request.POST or None, initial=initial)
     if form.is_valid():
         txn = form.save()
-        messages.success(request, f'Transaksi ${txn.amount:,.2f} berhasil dicatat!')
+        messages.success(request, f'Transaction ${txn.amount:,.2f} added successfully!')
         return redirect('transaction_list')
-    return render(request, 'core/transaction_form.html', {'form': form, 'title': 'Tambah Transaksi'})
+    return render(request, 'core/transaction_form.html', {'form': form, 'title': 'Add Transaction'})
 
 
 # ─── LOYALTY ─────────────────────────────────────────────────────────────────
@@ -207,7 +222,7 @@ def loyalty_list(request):
 def analytics(request):
     if request.method == 'POST':
         run_all_predictions()
-        messages.success(request, 'Prediksi berhasil dijalankan untuk semua pelanggan!')
+        messages.success(request, 'Prediction successfully run for all customers!')
 
     predictions = PredictionResult.objects.select_related('customer').order_by('-churn_probability')
     high_risk   = predictions.filter(churn_probability__gte=70)
@@ -228,7 +243,7 @@ def analytics(request):
 def predict_single(request, pk):
     customer = get_object_or_404(Customer, pk=pk)
     result = run_prediction(customer)
-    messages.success(request, f'Prediksi untuk {customer.name}: Churn {result.churn_probability:.1f}%')
+    messages.success(request, f'Prediction completed for {customer.name}: Churn {result.churn_probability:.1f}% churn risk.')
     return redirect('customer_detail', pk=pk)
 
 
@@ -258,9 +273,9 @@ def campaign_add(request):
     form = CampaignForm(request.POST or None)
     if form.is_valid():
         campaign = form.save()
-        messages.success(request, f'Campaign "{campaign.name}" berhasil dibuat!')
+        messages.success(request, f'Campaign "{campaign.name}" created successfully!')
         return redirect('campaign_list')
-    return render(request, 'core/campaign_form.html', {'form': form, 'title': 'Buat Campaign Baru'})
+    return render(request, 'core/campaign_form.html', {'form': form, 'title': 'Create New Campaign'})
 
 @login_required
 def campaign_detail(request, pk):
@@ -285,7 +300,7 @@ def campaign_edit(request, pk):
     form = CampaignForm(request.POST or None, instance=campaign)
     if form.is_valid():
         form.save()
-        messages.success(request, 'Campaign berhasil diperbarui!')
+        messages.success(request, 'Campaign updated successfully!')
         return redirect('campaign_list')
     return render(request, 'core/campaign_form.html', {'form': form, 'title': 'Edit Campaign', 'campaign': campaign})
 
@@ -295,7 +310,7 @@ def campaign_delete(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
     if request.method == 'POST':
         campaign.delete()
-        messages.success(request, 'Campaign berhasil dihapus.')
+        messages.success(request, 'Campaign deleted successfully.')
         return redirect('campaign_list')
     return render(request, 'core/campaign_confirm_delete.html', {'campaign': campaign})
 

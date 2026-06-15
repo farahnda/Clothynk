@@ -1,13 +1,13 @@
 {% extends 'core/base.html' %}
-{% block title %}Pelanggan{% endblock %}
-{% block page_title %}Daftar Pelanggan{% endblock %}
+{% block title %}Customers{% endblock %}
+{% block page_title %}Customer List{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
   <form class="d-flex gap-2" method="get">
-    <input type="text" name="q" value="{{ q }}" placeholder="Cari nama, email, ID..." class="form-control" style="width:260px">
+    <input type="text" name="q" value="{{ q }}" placeholder="Search name, email, ID..." class="form-control" style="width:260px">
     <select name="tier" class="form-select" style="width:160px">
-      <option value="">Semua Tier</option>
+      <option value="">All Tiers</option>
       <option value="bronze" {% if tier == 'bronze' %}selected{% endif %}>Bronze</option>
       <option value="silver" {% if tier == 'silver' %}selected{% endif %}>Silver</option>
       <option value="gold"   {% if tier == 'gold'   %}selected{% endif %}>Gold</option>
@@ -15,7 +15,7 @@
     </select>
     <button class="btn btn-accent px-3" type="submit"><i class="bi bi-search"></i></button>
   </form>
-  <a href="{% url 'customer_add' %}" class="btn btn-accent"><i class="bi bi-plus-lg me-1"></i>Tambah Pelanggan</a>
+  <a href="{% url 'customer_add' %}" class="btn btn-accent"><i class="bi bi-plus-lg me-1"></i>Add Customer</a>
 </div>
 
 <div class="card">
@@ -23,12 +23,12 @@
     <table class="table mb-0">
       <thead>
         <tr>
-          <th>Pelanggan</th>
+          <th>Customer</th>
           <th>Customer ID</th>
           <th>Gender</th>
-          <th>Lokasi</th>
-          <th>Kategori</th>
-          <th>Channel</th>
+          <th>Location</th>
+          <th>Purchase Category</th>
+          <th>Purchase Channel</th>
           <th>Loyalty</th>
           <th></th>
         </tr>
@@ -52,21 +52,21 @@
           <td>{{ c.get_purchase_channel_display }}</td>
           <td>
             {% if c.loyalty %}
-              <span class="tier-badge tier-{{ c.loyalty.tier }}">● {{ c.loyalty.get_tier_display }}</span>
+              <span class="tier-badge tier-{{ c.loyalty.tier }}"><i class="bi bi-award-fill me-1"></i> {{ c.loyalty.get_tier_display }}</span>
             {% else %}
               <span class="text-muted" style="font-size:.8rem">—</span>
             {% endif %}
           </td>
           <td>
-            <a href="{% url 'customer_detail' c.pk %}" class="btn btn-sm btn-outline-secondary">Detail</a>
+            <a href="{% url 'customer_detail' c.pk %}" class="btn btn-sm btn-outline-secondary">Details</a>
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="8" class="text-center text-muted py-4">Tidak ada pelanggan ditemukan.</td></tr>
+        <tr><td colspan="8" class="text-center text-muted py-4">No customers found.</td></tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
-<div class="mt-2 text-muted" style="font-size:.8rem">Menampilkan {{ customers|length }} pelanggan</div>
+<div class="mt-2 text-muted" style="font-size:.8rem">Displaying {{ customers|length }} customers</div>
 {% endblock %}

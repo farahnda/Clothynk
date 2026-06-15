@@ -29,7 +29,7 @@ class CustomerForm(forms.ModelForm):
             'social_media_influence': forms.Select(attrs={'class': 'form-select'}),
             'discount_sensitivity': forms.Select(attrs={'class': 'form-select'}),
             'device_used':          forms.TextInput(attrs={'class': 'form-control'}),
-            'payment_method':       forms.TextInput(attrs={'class': 'form-control'}),
+            'payment_method':       forms.Select(attrs={'class': 'form-select'}),
             'shipping_preference':  forms.Select(attrs={'class': 'form-select'}),
             'purchase_intent':      forms.Select(attrs={'class': 'form-select'}),
         }

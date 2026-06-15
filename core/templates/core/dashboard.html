@@ -7,7 +7,7 @@
 <div class="row g-3 mb-4">
   <div class="col-md-3">
     <div class="stat-card">
-      <div class="stat-icon" style="background:#EEF2FF;"><span style="font-size:1.3rem;">👥</span></div>
+      <div class="stat-icon" style="background:#EEF2FF;"><i class="bi bi-people-fill" style="font-size:1.2rem; color:#6C63FF;"></i></div>
       <div>
         <div class="stat-label">Total Customers</div>
         <div class="stat-value">{{ total_customers }}</div>
@@ -17,7 +17,7 @@
   </div>
   <div class="col-md-3">
     <div class="stat-card">
-      <div class="stat-icon" style="background:#F0FDF4;"><span style="font-size:1.3rem;">🧾</span></div>
+      <div class="stat-icon" style="background:#F0FDF4;"><i class="bi bi-receipt" style="font-size:1.2rem; color:#10B981;"></i></div>
       <div>
         <div class="stat-label">Total Transactions</div>
         <div class="stat-value">{{ total_transactions }}</div>
@@ -27,7 +27,7 @@
   </div>
   <div class="col-md-3">
     <div class="stat-card">
-      <div class="stat-icon" style="background:#FFFBEB;"><span style="font-size:1.3rem;">💰</span></div>
+      <div class="stat-icon" style="background:#FFFBEB;"><i class="bi bi-cash-stack" style="font-size:1.2rem; color:#F59E0B;"></i></div>
       <div>
         <div class="stat-label">Revenue This Month</div>
         <div class="stat-value" style="font-size:1.1rem;">${{ revenue_this_month|floatformat:2 }}</div>
@@ -37,7 +37,7 @@
   </div>
   <div class="col-md-3">
     <div class="stat-card">
-      <div class="stat-icon" style="background:#FFF0F3;"><span style="font-size:1.3rem;">⚠️</span></div>
+      <div class="stat-icon" style="background:#FFF0F3;"> <i class="bi bi-exclamation-triangle-fill" style="font-size:1.2rem; color:#EF4444;"></i></div>
       <div>
         <div class="stat-label">Churn Risk</div>
         <div class="stat-value">{{ total_churn_risk }}</div>
@@ -51,7 +51,7 @@
   <div class="col-md-8">
     <div class="card h-100 shadow-sm border-0">
       <div class="card-header bg-white d-flex align-items-center justify-content-between py-3">
-        <span class="fw-bold">📈 Revenue Trends</span>
+        <span class="fw-bold"><i class="bi bi-graph-up-arrow me-2"></i>Revenue Trends</span></span>
         <select id="revenueFilter" class="form-select form-select-sm" style="width: auto; font-size: 0.8rem; cursor: pointer;">
           <option value="1m">1 Month Ago</option>
           <option value="3m">3 Months Ago</option>
@@ -70,7 +70,7 @@
   
   <div class="col-md-4">
     <div class="card h-100 shadow-sm border-0">
-      <div class="card-header bg-white py-3 fw-bold">🏅 Loyalty Tier Distribution</div>
+      <div class="card-header bg-white py-3 fw-bold"><i class="bi bi-award me-2"></i>Loyalty Tier Distribution</div>
       <div class="card-body d-flex flex-column align-items-center justify-content-center">
         <canvas id="tierChart" width="200" height="200"></canvas>
         <div class="d-flex gap-2 flex-wrap justify-content-center mt-3">
@@ -90,7 +90,7 @@
     
     <div class="card shadow-sm border-0" style="border-radius: 12px;">
       <div class="card-header bg-white d-flex align-items-center justify-content-between py-3">
-        <span class="fw-bold">🧾 Newest Transactions</span>
+        <span class="fw-bold"><i class="bi bi-receipt-cutoff me-2"></i>Newest Transactions</span>
         <a href="{% url 'transaction_list' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;font-size:0.75rem;">View All</a>
       </div>
       <div class="card-body p-0">
@@ -120,7 +120,7 @@
                 <td style="color:#888;font-size:0.8rem;">{{ trx.date|date:"d M Y" }}</td>
               </tr>
               {% empty %}
-              <tr><td colspan="4" class="text-center text-muted py-4">Belum ada transaksi</td></tr>
+              <tr><td colspan="4" class="text-center text-muted py-4">No Transactions Found</td></tr>
               {% endfor %}
             </tbody>
           </table>
@@ -132,7 +132,7 @@
       <div class="card-body p-4 d-flex flex-column justify-content-center">
         
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;">🚀 Top Campaign Performance</h6>
+          <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;"><i class="bi bi-megaphone me-2"></i>Top Campaign Performance</h6>
           {% if top_campaign and top_campaign.is_running %}
             <span class="badge" style="background:#D1FAE5; color:#065F46; font-size: 0.7rem;">🟢 Currently Running</span>
           {% else %}
@@ -173,7 +173,7 @@
   </div> <div class="col-md-5">
     
     <div class="card shadow-sm border-0 mb-3" style="border-radius: 12px;">
-      <div class="card-header bg-white py-3 fw-bold">⭐ Top Customers</div>
+      <div class="card-header bg-white py-3 fw-bold"><i class="bi bi-star-fill me-2"></i>Top Customers</div>
       <div class="card-body p-0">
         <table class="table align-middle mb-0">
           <tbody>
@@ -190,7 +190,7 @@
               <td class="text-end pe-4 fw-bold" style="color:#6C63FF; font-size:0.85rem;">${{ c.total|floatformat:2 }}</td>
             </tr>
             {% empty %}
-            <tr><td colspan="2" class="text-center text-muted py-3">Belum ada data</td></tr>
+            <tr><td colspan="2" class="text-center text-muted py-3">No customers found</td></tr>
             {% endfor %}
           </tbody>
         </table>
@@ -199,7 +199,7 @@
 
     {% if churn_risks %}
     <div class="card shadow-sm border-0" style="border-radius: 12px;">
-      <div class="card-header bg-white py-3 fw-bold" style="color:#EF4444;">🚨 Highest Churn Risk</div>
+      <div class="card-header bg-white py-3 fw-bold" style="color:#EF4444;"><i class="bi bi-exclamation-octagon-fill me-2"></i>Highest Churn Risk</div>
       <div class="card-body p-0">
         {% for pred in churn_risks %}
         <div class="d-flex align-items-center justify-content-between px-4 py-2 border-bottom">

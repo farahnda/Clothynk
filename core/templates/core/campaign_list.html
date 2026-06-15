@@ -6,10 +6,10 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <span class="badge" style="background:#ECFDF5; color:#059669; font-size:0.8rem; padding: 8px 12px; border: 1px solid #A7F3D0; font-weight: 600;">
-        <i class="bi bi-megaphone me-1"></i> {{ active_count }} Campaign Aktif
+        <i class="bi bi-megaphone me-1"></i> {{ active_count }} Active Campaigns
     </span>
     <a href="{% url 'campaign_add' %}" class="btn btn-accent px-4" style="border-radius: 8px; font-weight: 500;">
-        <i class="bi bi-plus-lg me-1"></i>Buat Campaign
+        <i class="bi bi-plus-lg me-1"></i>Create Campaign
     </a>
 </div>
 
@@ -23,13 +23,13 @@
                     <h6 class="fw-bold mb-0 text-dark" style="font-size: 1.05rem;">{{ campaign.name }}</h6>
                     
                     {% if not campaign.is_active %}
-                        <span class="badge bg-light text-secondary" style="font-size:0.7rem; font-weight: 600;">Nonaktif</span>
+                        <span class="badge bg-light text-secondary" style="font-size:0.7rem; font-weight: 600;"><i class="bi bi-pause-circle-fill me-1"> </i>Inactive</span>
                     {% elif campaign.is_running %}
-                        <span class="badge" style="background:#D1FAE5; color:#059669; font-size:0.7rem; font-weight: 600;">Aktif</span>
+                        <span class="badge" style="background:#D1FAE5; color:#059669; font-size:0.7rem; font-weight: 600;"><i class="bi bi-play-circle-fill me-1"></i> Active</span>
                     {% elif campaign.is_upcoming %}
-                        <span class="badge" style="background:#DBEAFE; color:#2563EB; font-size:0.7rem; font-weight: 600;">Akan Datang</span>
+                        <span class="badge" style="background:#DBEAFE; color:#2563EB; font-size:0.7rem; font-weight: 600;"><i class="bi bi-clock-fill me-1"></i> Upcoming</span>
                     {% elif campaign.is_completed %}
-                        <span class="badge" style="background:#F3F4F6; color:#6B7280; font-size:0.7rem; font-weight: 600;">Selesai</span>
+                        <span class="badge" style="background:#F3F4F6; color:#6B7280; font-size:0.7rem; font-weight: 600;"><i class="bi bi-check-circle-fill me-1"></i> Completed</span>
                     {% endif %}
                 </div>
                 
