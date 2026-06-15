@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <a href="{% url 'campaign_list' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;">← Kembali</a>
+  <a href="{% url 'campaign_list' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;">← Back</a>
   <div class="d-flex gap-2">
     <a href="{% url 'campaign_edit' campaign.pk %}" class="btn btn-sm btn-outline-primary" style="border-radius:8px;">Edit Campaign</a>
   </div>
@@ -18,13 +18,13 @@
             <h5 class="fw-bold mb-0">{{ campaign.name }}</h5>
             
             {% if not campaign.is_active %}
-                <span class="badge bg-light text-secondary">⚫ Nonaktif</span>
+                <span class="badge bg-light text-secondary">⚫ Inactive</span>
             {% elif campaign.is_running %}
-                <span class="badge" style="background:#D1FAE5;color:#065F46;">🟢 Aktif</span>
+                <span class="badge" style="background:#D1FAE5;color:#065F46;">🟢 Active</span>
             {% elif campaign.is_upcoming %}
-                <span class="badge" style="background:#DBEAFE;color:#1E3A8A;">⏳ Belum Mulai</span>
+                <span class="badge" style="background:#DBEAFE;color:#1E3A8A;">⏳ Upcoming</span>
             {% elif campaign.is_completed %}
-                <span class="badge" style="background:#F3F4F6;color:#374151;">🏁 Selesai</span>
+                <span class="badge" style="background:#F3F4F6;color:#374151;">🏁 Completed</span>
             {% endif %}
         </div>
         
@@ -84,7 +84,7 @@
             </tr>
             {% empty %}
             <tr>
-              <td colspan="4" class="text-center text-muted py-4">Tidak ada klien yang masuk dalam target tier ini.</td>
+              <td colspan="4" class="text-center text-muted py-4">No customers match the target tier.</td>
             </tr>
             {% endfor %}
           </tbody>

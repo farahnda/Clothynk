@@ -9,9 +9,9 @@
     <div class="stat-card">
       <div class="stat-icon" style="background:#EEF2FF;"><span style="font-size:1.3rem;">👥</span></div>
       <div>
-        <div class="stat-label">Total Pelanggan</div>
+        <div class="stat-label">Total Customers</div>
         <div class="stat-value">{{ total_customers }}</div>
-        <div class="stat-sub">+{{ new_customers_this_month|default:0 }} bulan ini</div>
+        <div class="stat-sub">+{{ new_customers_this_month|default:0 }} this month</div>
       </div>
     </div>
   </div>
@@ -19,9 +19,9 @@
     <div class="stat-card">
       <div class="stat-icon" style="background:#F0FDF4;"><span style="font-size:1.3rem;">🧾</span></div>
       <div>
-        <div class="stat-label">Total Transaksi</div>
+        <div class="stat-label">Total Transactions</div>
         <div class="stat-value">{{ total_transactions }}</div>
-        <div class="stat-sub">Semua waktu</div>
+        <div class="stat-sub">All Time</div>
       </div>
     </div>
   </div>
@@ -29,9 +29,9 @@
     <div class="stat-card">
       <div class="stat-icon" style="background:#FFFBEB;"><span style="font-size:1.3rem;">💰</span></div>
       <div>
-        <div class="stat-label">Pendapatan Bulan Ini</div>
+        <div class="stat-label">Revenue This Month</div>
         <div class="stat-value" style="font-size:1.1rem;">${{ revenue_this_month|floatformat:2 }}</div>
-        <div class="stat-sub">Bulan berjalan</div>
+        <div class="stat-sub">Current Month</div>
       </div>
     </div>
   </div>
@@ -39,9 +39,9 @@
     <div class="stat-card">
       <div class="stat-icon" style="background:#FFF0F3;"><span style="font-size:1.3rem;">⚠️</span></div>
       <div>
-        <div class="stat-label">Risiko Churn</div>
+        <div class="stat-label">Churn Risk</div>
         <div class="stat-value">{{ total_churn_risk }}</div>
-        <div class="stat-sub">Perlu perhatian</div>
+        <div class="stat-sub">Requires Attention</div>
       </div>
     </div>
   </div>
@@ -51,11 +51,13 @@
   <div class="col-md-8">
     <div class="card h-100 shadow-sm border-0">
       <div class="card-header bg-white d-flex align-items-center justify-content-between py-3">
-        <span class="fw-bold">📈 Tren Pendapatan</span>
+        <span class="fw-bold">📈 Revenue Trends</span>
         <select id="revenueFilter" class="form-select form-select-sm" style="width: auto; font-size: 0.8rem; cursor: pointer;">
-          <option value="6m">6 Bulan Terakhir</option>
-          <option value="1y">1 Tahun Terakhir</option>
-          <option value="all">Semua Waktu</option>
+          <option value="1m">1 Month Ago</option>
+          <option value="3m">3 Months Ago</option>
+          <option value="6m">6 Months Ago</option>
+          <option value="1y">1 Year Ago</option>
+          <option value="all">All Time</option>
         </select>
       </div>
       <div class="card-body p-0">
@@ -68,7 +70,7 @@
   
   <div class="col-md-4">
     <div class="card h-100 shadow-sm border-0">
-      <div class="card-header bg-white py-3 fw-bold">🏅 Distribusi Tier Loyalty</div>
+      <div class="card-header bg-white py-3 fw-bold">🏅 Loyalty Tier Distribution</div>
       <div class="card-body d-flex flex-column align-items-center justify-content-center">
         <canvas id="tierChart" width="200" height="200"></canvas>
         <div class="d-flex gap-2 flex-wrap justify-content-center mt-3">
@@ -88,18 +90,18 @@
     
     <div class="card shadow-sm border-0" style="border-radius: 12px;">
       <div class="card-header bg-white d-flex align-items-center justify-content-between py-3">
-        <span class="fw-bold">🧾 Transaksi Terbaru</span>
-        <a href="{% url 'transaction_list' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;font-size:0.75rem;">Lihat semua</a>
+        <span class="fw-bold">🧾 Newest Transactions</span>
+        <a href="{% url 'transaction_list' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;font-size:0.75rem;">View All</a>
       </div>
       <div class="card-body p-0">
         <div class="table-responsive">
           <table class="table align-middle mb-0">
             <thead class="table-light">
               <tr>
-                <th class="ps-4">Pelanggan</th>
+                <th class="ps-4">Customer</th>
                 <th>Total</th>
-                <th>Metode</th>
-                <th>Tanggal</th>
+                <th>Method</th>
+                <th>Date</th>
               </tr>
             </thead>
             <tbody>
@@ -130,11 +132,11 @@
       <div class="card-body p-4 d-flex flex-column justify-content-center">
         
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;">🚀 Performa Campaign Teratas</h6>
+          <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;">🚀 Top Campaign Performance</h6>
           {% if top_campaign and top_campaign.is_running %}
-            <span class="badge" style="background:#D1FAE5; color:#065F46; font-size: 0.7rem;">🟢 Sedang Berjalan</span>
+            <span class="badge" style="background:#D1FAE5; color:#065F46; font-size: 0.7rem;">🟢 Currently Running</span>
           {% else %}
-            <span class="badge bg-secondary text-white" style="font-size: 0.7rem;">Tidak Ada Campaign Aktif</span>
+            <span class="badge bg-secondary text-white" style="font-size: 0.7rem;">No Active Campaign</span>
           {% endif %}
         </div>
         
@@ -142,26 +144,26 @@
         <div>
             <h6 class="fw-bold mb-1 text-dark" style="font-size: 0.95rem;">{{ top_campaign.name }}</h6>
             <p class="text-muted mb-4" style="font-size: 0.8rem;">
-            <i class="bi bi-clock-history me-1"></i> Sisa {{ top_campaign.end_date|timeuntil }} lagi (Berakhir {{ top_campaign.end_date|date:"d M Y" }})
+            <i class="bi bi-clock-history me-1"></i> Remaining {{ top_campaign.end_date|timeuntil }} (Expires {{ top_campaign.end_date|date:"d M Y" }})
             </p>
         </div>
         
         <div class="mt-auto">
             <div class="d-flex justify-content-between align-items-end mb-2">
-            <span style="font-size: 0.8rem; font-weight: 500; color: #4B5563;">Target Audiens</span>
-            <span style="font-size: 0.85rem; font-weight: 700; color: #6C63FF;">{{ top_campaign.get_target_count }} Orang</span>
+            <span style="font-size: 0.8rem; font-weight: 500; color: #4B5563;">Target Audience</span>
+            <span style="font-size: 0.85rem; font-weight: 700; color: #6C63FF;">{{ top_campaign.get_target_count }} People</span>
             </div>
             
             <div class="progress" style="height: 8px; border-radius: 10px; background-color: #EEF2FF;">
             <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%; background-color: #6C63FF;"></div>
             </div>
             <small class="text-muted mt-3 d-block" style="font-size: 0.75rem;">
-            Target tier: <strong>{{ top_campaign.get_target_tier_display }}</strong>. Diskon: <strong>{{ top_campaign.discount_percentage|floatformat:0 }}%</strong>
+            Target tier: <strong>{{ top_campaign.get_target_tier_display }}</strong>. Discount: <strong>{{ top_campaign.discount_percentage|floatformat:0 }}%</strong>
             </small>
         </div>
         {% else %}
         <div class="text-center py-4">
-            <p class="text-muted mb-0" style="font-size:0.85rem;">Belum ada campaign yang sedang berjalan bulan ini.</p>
+            <p class="text-muted mb-0" style="font-size:0.85rem;">No active campaign is running this month.</p>
         </div>
         {% endif %}
         
@@ -171,7 +173,7 @@
   </div> <div class="col-md-5">
     
     <div class="card shadow-sm border-0 mb-3" style="border-radius: 12px;">
-      <div class="card-header bg-white py-3 fw-bold">⭐ Top Pelanggan</div>
+      <div class="card-header bg-white py-3 fw-bold">⭐ Top Customers</div>
       <div class="card-body p-0">
         <table class="table align-middle mb-0">
           <tbody>
@@ -197,7 +199,7 @@
 
     {% if churn_risks %}
     <div class="card shadow-sm border-0" style="border-radius: 12px;">
-      <div class="card-header bg-white py-3 fw-bold" style="color:#EF4444;">🚨 Risiko Churn Tertinggi</div>
+      <div class="card-header bg-white py-3 fw-bold" style="color:#EF4444;">🚨 Highest Churn Risk</div>
       <div class="card-body p-0">
         {% for pred in churn_risks %}
         <div class="d-flex align-items-center justify-content-between px-4 py-2 border-bottom">
@@ -206,7 +208,7 @@
         </div>
         {% endfor %}
         <div class="p-3 text-center">
-          <a href="{% url 'analytics' %}" class="text-decoration-none fw-bold" style="font-size:0.8rem;color:#6C63FF;">Lihat analitik lengkap →</a>
+          <a href="{% url 'analytics' %}" class="text-decoration-none fw-bold" style="font-size:0.8rem;color:#6C63FF;">View complete analytics →</a>
         </div>
       </div>
     </div>

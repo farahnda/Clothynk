@@ -299,23 +299,30 @@ def campaign_delete(request, pk):
         return redirect('campaign_list')
     return render(request, 'core/campaign_confirm_delete.html', {'campaign': campaign})
 
-
 @login_required
 def revenue_chart_data(request):
-    period = request.GET.get('period', '6m') # Default 6 bulan
+    period = request.GET.get('period', '6m')
     today = timezone.now()
 
-    # Logika filter waktu
-    if period == '6m':
+    if period == '1m':
+        start_date = today - timedelta(days=30)
+        query = Transaction.objects.filter(date__gte=start_date)
+
+    elif period == '3m':
+        start_date = today - timedelta(days=90)
+        query = Transaction.objects.filter(date__gte=start_date)
+
+    elif period == '6m':
         start_date = today - timedelta(days=180)
         query = Transaction.objects.filter(date__gte=start_date)
+
     elif period == '1y':
         start_date = today - timedelta(days=365)
         query = Transaction.objects.filter(date__gte=start_date)
-    else: # 'all' / Semua Waktu
+
+    else:  # all
         query = Transaction.objects.all()
 
-    # Kelompokkan data berdasarkan tanggal
     recent_txn = (
         query
         .values('date__date')
@@ -330,3 +337,40 @@ def revenue_chart_data(request):
         'labels': labels,
         'data': data
     })
+
+# @login_required
+# def revenue_chart_data(request):
+#     period = request.GET.get('period', '6m') # Default 6 bulan
+#     today = timezone.now()
+
+#     # Logika filter waktu
+#     if period == '1m':
+#         start_date = today - timedelta(days=30)
+#         query = Transaction.objects.filter(date__gte=start_date)
+#     elif period == '3m':
+#         start_date = today - timedelta(days=90)
+#         query = Transaction.objects.filter(date__gte=start_date)
+#     if period == '6m':
+#         start_date = today - timedelta(days=180)
+#         query = Transaction.objects.filter(date__gte=start_date)
+#     elif period == '1y':
+#         start_date = today - timedelta(days=365)
+#         query = Transaction.objects.filter(date__gte=start_date)
+#     else: # 'all' / Semua Waktu
+#         query = Transaction.objects.all()
+
+#     # Kelompokkan data berdasarkan tanggal
+#     recent_txn = (
+#         query
+#         .values('date__date')
+#         .annotate(total=Sum('amount'))
+#         .order_by('date__date')
+#     )
+
+#     labels = [str(r['date__date']) for r in recent_txn]
+#     data = [float(r['total']) for r in recent_txn]
+
+#     return JsonResponse({
+#         'labels': labels,
+#         'data': data
+#     })

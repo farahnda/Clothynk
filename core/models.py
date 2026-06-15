@@ -119,10 +119,10 @@ class LoyaltyProfile(models.Model):
     updated_at     = models.DateTimeField(auto_now=True)
 
     TIER_THRESHOLDS = {
-        'bronze':   (0,     500),
-        'silver':   (500,   2000),
-        'gold':     (2000,  5000),
-        'platinum': (5000,  float('inf')),
+        'bronze':   (0,     100),
+        'silver':   (100,   500),
+        'gold':     (500,   1000),
+        'platinum': (1000,  float('inf')),
     }
     TIER_COLORS = {
         'bronze': '#cd7f32',
@@ -137,11 +137,11 @@ class LoyaltyProfile(models.Model):
         points = int(total // 10)
 
         tier = 'bronze'
-        if total >= 5000:
+        if total >= 1000:
             tier = 'platinum'
-        elif total >= 2000:
-            tier = 'gold'
         elif total >= 500:
+            tier = 'gold'
+        elif total >= 100:
             tier = 'silver'
 
         obj, _ = cls.objects.get_or_create(customer=customer)
@@ -155,7 +155,7 @@ class LoyaltyProfile(models.Model):
         return self.TIER_COLORS.get(self.tier, '#999')
 
     def get_next_tier_info(self):
-        thresholds = [('bronze', 0), ('silver', 500), ('gold', 2000), ('platinum', 5000)]
+        thresholds = [('bronze', 0), ('silver', 100), ('gold', 500), ('platinum', 1000)]
         for i, (t, val) in enumerate(thresholds):
             if t == self.tier and i < len(thresholds) - 1:
                 next_tier, next_val = thresholds[i + 1]
@@ -222,19 +222,19 @@ class PredictionResult(models.Model):
 
     def get_risk_label(self):
         if self.churn_probability >= 70:
-            return ('danger', 'Risiko Tinggi')
+            return ('danger', 'High Risk')
         elif self.churn_probability >= 40:
-            return ('warning', 'Risiko Sedang')
-        return ('success', 'Risiko Rendah')
+            return ('warning', 'Medium Risk')
+        return ('success', 'Low Risk')
 
     @property
     def recommendation(self):
         if self.churn_probability >= 70:
-            return "Risiko Tinggi! Kirim campaign retensi agresif (Voucher: COMEBACK30) untuk mencegah churn."
+            return "High Risk! Send aggressive retention campaign (Voucher: COMEBACK30) to prevent churn."
         elif self.churn_probability >= 40:
-            return "Risiko Sedang. Berikan insentif moderat atau upselling fitur (Voucher: TRYAI15) agar kembali aktif."
+            return "Medium Risk. Offer moderate incentives or upsell features (Voucher: TRYAI15) to encourage re-engagement."
         else:
-            return "Risiko Rendah (Loyal). Pertahankan hubungan dengan penawaran eksklusif tier (Voucher: VIPONLY10)."
+            return "Low Risk (Loyal). Maintain the relationship with exclusive tier offers (Voucher: VIPONLY10)."
 
     def __str__(self):
         return f"{self.customer.name} - Churn: {self.churn_probability:.1f}%"

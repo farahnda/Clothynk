@@ -10,13 +10,27 @@
   <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#ECEFF1"><i class="bi bi-award-fill" style="color:#546E7A"></i></div><div><div class="stat-label">Platinum</div><div class="stat-value">{{ tier_counts.platinum }}</div></div></div></div>
 </div>
 
-<div class="d-flex gap-2 mb-3">
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <form class="d-flex gap-2" method="get">
+    <input type="text" name="q" value="{{ q }}" placeholder="Cari nama, email, ID..." class="form-control" style="width:260px">
+    <select name="tier" class="form-select" style="width:160px">
+      <option value="">Semua Tier</option>
+      <option value="bronze" {% if tier == 'bronze' %}selected{% endif %}>Bronze</option>
+      <option value="silver" {% if tier == 'silver' %}selected{% endif %}>Silver</option>
+      <option value="gold"   {% if tier == 'gold'   %}selected{% endif %}>Gold</option>
+      <option value="platinum" {% if tier == 'platinum' %}selected{% endif %}>Platinum</option>
+    </select>
+    <button class="btn btn-accent px-3" type="submit"><i class="bi bi-search"></i></button>
+  </form>
+  {% comment %} <a href="{% url 'customer_add' %}" class="btn btn-accent"><i class="bi bi-plus-lg me-1"></i>Tambah Pelanggan</a> {% endcomment %}
+</div>
+{% comment %} <div class="d-flex gap-2 mb-3">
   <a href="?" class="btn btn-sm {% if not tier %}btn-accent{% else %}btn-outline-secondary{% endif %}">Semua</a>
   <a href="?tier=bronze"   class="btn btn-sm {% if tier == 'bronze'   %}btn-accent{% else %}btn-outline-secondary{% endif %}">Bronze</a>
   <a href="?tier=silver"   class="btn btn-sm {% if tier == 'silver'   %}btn-accent{% else %}btn-outline-secondary{% endif %}">Silver</a>
   <a href="?tier=gold"     class="btn btn-sm {% if tier == 'gold'     %}btn-accent{% else %}btn-outline-secondary{% endif %}">Gold</a>
   <a href="?tier=platinum" class="btn btn-sm {% if tier == 'platinum' %}btn-accent{% else %}btn-outline-secondary{% endif %}">Platinum</a>
-</div>
+</div> {% endcomment %}
 
 <div class="card">
   <div class="table-responsive">

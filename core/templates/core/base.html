@@ -267,7 +267,20 @@
     .campaign-running { border-left: 4px solid #10B981 !important; }
     .campaign-upcoming { border-left: 4px solid #3B82F6 !important; }
     .campaign-completed { border-left: 4px solid #9CA3AF !important; opacity: 0.75; background-color: #F9FAFB !important; }
-    
+
+    .prediction-icon{
+        width:60px;
+        height:60px;
+        border-radius:16px;
+        background:rgba(108,99,255,0.1);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:#6C63FF;
+        font-size:1.8rem;
+        flex-shrink:0;
+    }
+        
   </style>
 </head>
 <body>
@@ -276,18 +289,18 @@
 <nav id="sidebar">
   <div class="sidebar-brand">
     <div class="brand-name">✦ Clothynk</div>
-    <div class="brand-sub">Fashion CRM</div>
+    <div class="brand-sub">Clothing CRM</div>
   </div>
   <div class="sidebar-nav">
-    <div class="nav-section-label">Menu Utama</div>
+    <div class="nav-section-label">Main Menu</div>
     <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
       <i class="bi bi-grid-1x2-fill"></i> Dashboard
     </a>
     <a href="{% url 'customer_list' %}" class="nav-link {% if 'customer' in request.resolver_match.url_name %}active{% endif %}">
-      <i class="bi bi-people-fill"></i> Pelanggan
+      <i class="bi bi-people-fill"></i> Customers
     </a>
     <a href="{% url 'transaction_list' %}" class="nav-link {% if 'transaction' in request.resolver_match.url_name %}active{% endif %}">
-      <i class="bi bi-receipt"></i> Transaksi
+      <i class="bi bi-receipt"></i> Transactions
     </a>
 
     <div class="nav-section-label">Program</div>
@@ -298,15 +311,15 @@
       <i class="bi bi-megaphone-fill"></i> Campaign & Promo
     </a>
 
-    <div class="nav-section-label">Analitik</div>
+    <div class="nav-section-label">Analytics</div>
     <a href="{% url 'analytics' %}" class="nav-link {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}">
-      <i class="bi bi-graph-up-arrow"></i> Prediksi Perilaku
+      <i class="bi bi-graph-up-arrow"></i> Behavior Prediction
     </a>
   </div>
   <div class="sidebar-footer">
-    <div class="px-2 pb-1 text-white" style="font-size:0.7rem; opacity:0.4;">Login sebagai</div>
+    <div class="px-2 pb-1 text-white" style="font-size:0.7rem; opacity:0.4;">Login as</div>
     <div class="px-2 pb-2 text-white" style="font-size:0.82rem; font-weight:600;">{{ request.user.username }}</div>
-    <a href="{% url 'logout' %}" class="nav-link"><i class="bi bi-box-arrow-left"></i> Keluar</a>
+    <a href="{% url 'logout' %}" class="nav-link"><i class="bi bi-box-arrow-left"></i> Logout</a>
   </div>
 </nav>
 

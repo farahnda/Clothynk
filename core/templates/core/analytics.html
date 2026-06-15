@@ -1,26 +1,28 @@
 {% extends 'core/base.html' %}
 {% load crm_tags %}
-{% block title %}Analitik Prediktif{% endblock %}
-{% block page_title %}Prediksi Perilaku Pelanggan{% endblock %}
+{% block title %}Predictive Analytics{% endblock %}
+{% block page_title %}Predictive Analytics{% endblock %}
 
 {% block content %}
 <div class="card mb-4 border-0 shadow-sm" style="border-left:4px solid #6C63FF; background:linear-gradient(135deg,#F8F9FF,#fff);">
     <div class="card-body">
         <div class="d-flex align-items-start gap-3">
-            <div style="font-size:2rem;">🤖</div>
+            <div class="prediction-icon">
+    <i class="bi bi-graph-up-arrow"></i>
+            </div>            
             <div>
-                <h6 class="fw-bold mb-1">Logistic Regression — Prediksi Churn & Repurchase</h6>
-                <p class="text-muted mb-2" style="font-size:0.85rem;">Sistem menggunakan <strong>Logistic Regression</strong> dengan analisis <strong>RFM</strong>.</p>
+                <h6 class="fw-bold mb-1">Logistic Regression — Predict Churn & Repurchase</h6>
+                <p class="text-muted mb-2" style="font-size:0.85rem;">System uses <strong>Logistic Regression</strong> with <strong>RFM</strong> analysis.</p>
                 {% if model_info %}
                 <div class="d-flex gap-3" style="font-size:0.8rem;">
-                    <span class="badge bg-light text-primary">Akurasi: {{ model_info.mean_accuracy|percentage }}</span>
+                    <span class="badge bg-light text-primary">Accuracy: {{ model_info.mean_accuracy|percentage }}</span>
                 </div>
                 {% endif %}
             </div>
             <div class="ms-auto">
                 <form method="post">
                     {% csrf_token %}
-                    <button type="submit" name="run_prediction" class="btn btn-accent"><i class="bi bi-play-fill me-1"></i>Jalankan</button>
+                    <button type="submit" name="run_prediction" class="btn btn-accent"><i class="bi bi-play-fill me-1"></i>Run Prediction</button>
                 </form>
             </div>
         </div>
@@ -29,23 +31,23 @@
 
 <div class="row g-3 mb-4">
     <div class="col-md-3"><div class="stat-card"><div><div class="stat-label">Total</div><div class="stat-value">{{ total_predicted }}</div></div></div></div>
-    <div class="col-md-3"><div class="stat-card"><div><div class="stat-label">Risiko Rendah</div><div class="stat-value" style="color:#10B981;">{{ low_risk|length }}</div></div></div></div>
-    <div class="col-md-3"><div class="stat-card"><div><div class="stat-label">Risiko Sedang</div><div class="stat-value" style="color:#F59E0B;">{{ medium_risk|length }}</div></div></div></div>
-    <div class="col-md-3"><div class="stat-card"><div><div class="stat-label">Risiko Tinggi</div><div class="stat-value" style="color:#EF4444;">{{ high_risk|length }}</div></div></div></div>
+    <div class="col-md-3"><div class="stat-card"><div><div class="stat-label">Low Risk</div><div class="stat-value" style="color:#10B981;">{{ low_risk|length }}</div></div></div></div>
+    <div class="col-md-3"><div class="stat-card"><div><div class="stat-label">Medium Risk</div><div class="stat-value" style="color:#F59E0B;">{{ medium_risk|length }}</div></div></div></div>
+    <div class="col-md-3"><div class="stat-card"><div><div class="stat-label">High Risk</div><div class="stat-value" style="color:#EF4444;">{{ high_risk|length }}</div></div></div></div>
 </div>
 
 <div class="card shadow-sm border-0">
-    <div class="card-header bg-white py-3 fw-bold">📋 Hasil Prediksi Terbaru</div>
+    <div class="card-header bg-white py-3 fw-bold">📋 Latest Prediction Results</div>
     <div class="table-responsive">
         <table class="table align-middle mb-0">
             <thead class="table-light">
                 <tr>
-                    <th class="ps-4">Pelanggan</th>
+                    <th class="ps-4">Customer</th>
                     <th>Status</th>
-                    <th>Prob. Beli Lagi</th>
-                    <th>Prob. Churn</th>
-                    <th>Rekomendasi</th>
-                    <th>Waktu Prediksi</th> 
+                    <th>Repurchase Prob.</th>
+                    <th>Churn Prob.</th>
+                    <th>Recommendation</th>
+                    <th>Prediction Time</th>
                 </tr>
             </thead>
             <tbody>
@@ -82,7 +84,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="text-center py-5 text-muted">Belum ada data prediksi.</td>
+                    <td colspan="6" class="text-center py-5 text-muted">No predictions available.</td>
                 </tr>
                 {% endfor %}
             </tbody>
