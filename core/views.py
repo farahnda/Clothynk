@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.db.models import Sum, Count, Avg
 from django.utils import timezone
 from datetime import timedelta
+from django.http import JsonResponse
 import json
 
 from .models import Customer, Transaction, LoyaltyProfile, Campaign, PredictionResult
@@ -14,51 +15,86 @@ from .ml import run_prediction, run_all_predictions
 # ─── DASHBOARD ───────────────────────────────────────────────────────────────
 @login_required
 def dashboard(request):
+    # 1. Statistik Dasar
     total_customers    = Customer.objects.count()
     total_transactions = Transaction.objects.count()
-    total_revenue      = Transaction.objects.aggregate(total=Sum('amount'))['total'] or 0
-    active_campaigns   = Campaign.objects.filter(is_active=True).count()
 
-    tier_stats = {
+    # Hitung Pendapatan Bulan Ini
+    today = timezone.now()
+    revenue_this_month = Transaction.objects.filter(
+        date__year=today.year,
+        date__month=today.month
+    ).aggregate(total=Sum('amount'))['total'] or 0
+
+    # Hitung Pelanggan Baru Bulan Ini
+    new_customers_this_month = Customer.objects.filter(
+        created_at__year=today.year,
+        created_at__month=today.month
+    ).count()
+
+    # 2. Distribusi Tier Loyalty
+    tier_counts = {
         'bronze':   LoyaltyProfile.objects.filter(tier='bronze').count(),
         'silver':   LoyaltyProfile.objects.filter(tier='silver').count(),
         'gold':     LoyaltyProfile.objects.filter(tier='gold').count(),
         'platinum': LoyaltyProfile.objects.filter(tier='platinum').count(),
     }
 
-    seven_days = timezone.now() - timedelta(days=365)
+    # 3. Data Grafik Pendapatan
+    seven_days = today - timedelta(days=365)
     recent_txn = (
         Transaction.objects
         .filter(date__gte=seven_days)
         .values('date__date')
-        .annotate(total=Sum('amount'), count=Count('id'))
+        .annotate(total=Sum('amount'))
         .order_by('date__date')
     )
-    chart_labels = [str(r['date__date']) for r in recent_txn]
-    chart_data   = [float(r['total']) for r in recent_txn]
+    monthly_labels = [str(r['date__date']) for r in recent_txn]
+    monthly_data   = [float(r['total']) for r in recent_txn]
+    
+    # 4. Top Pelanggan
+    top_customers = Customer.objects.annotate(
+        total=Sum('transactions__amount')
+    ).order_by('-total')[:5]
 
-    high_risk   = PredictionResult.objects.filter(churn_probability__gte=70).count()
-    medium_risk = PredictionResult.objects.filter(churn_probability__gte=40, churn_probability__lt=70).count()
-    low_risk    = PredictionResult.objects.filter(churn_probability__lt=40).count()
+    # 5. Risiko Churn 
+    total_churn_risk = PredictionResult.objects.filter(churn_probability__gte=70).count()
+    churn_risks = PredictionResult.objects.filter(
+        churn_probability__gte=70
+    ).select_related('customer').order_by('-churn_probability')[:5]
 
+    # 6. Transaksi Terbaru
     recent_transactions = Transaction.objects.select_related('customer').order_by('-date')[:5]
+
+   # 7. Campaign Teratas (BARU)
+    # Cari semua campaign yang sedang aktif saat ini
+    active_campaigns = Campaign.objects.filter(
+        is_active=True, 
+        start_date__lte=today.date() if isinstance(today, timezone.datetime) else today,
+        end_date__gte=today.date() if isinstance(today, timezone.datetime) else today
+    )
+
+    # Pilih campaign dengan jumlah target audiens (get_target_count) paling banyak
+    if active_campaigns.exists():
+        top_campaign = max(active_campaigns, key=lambda c: c.get_target_count())
+    else:
+        top_campaign = None
 
     context = {
         'total_customers': total_customers,
+        'new_customers_this_month': new_customers_this_month,
         'total_transactions': total_transactions,
-        'total_revenue': total_revenue,
-        'active_campaigns': active_campaigns,
-        'tier_stats': tier_stats,
-        'chart_labels': json.dumps(chart_labels),
-        'chart_data': json.dumps(chart_data),
-        'high_risk': high_risk,
-        'medium_risk': medium_risk,
-        'low_risk': low_risk,
+        'revenue_this_month': revenue_this_month,
+        'tier_counts': tier_counts,
+        'monthly_labels': json.dumps(monthly_labels),
+        'monthly_data': json.dumps(monthly_data),
+        'top_customers': top_customers,
+        'total_churn_risk': total_churn_risk,
+        'churn_risks': churn_risks,
         'recent_transactions': recent_transactions,
+        'top_campaign': top_campaign, # Kirim data campaign ke HTML
     }
     return render(request, 'core/dashboard.html', context)
-
-
 # ─── CUSTOMER ────────────────────────────────────────────────────────────────
 @login_required
 def customer_list(request):
@@ -199,9 +235,23 @@ def predict_single(request, pk):
 # ─── CAMPAIGN ────────────────────────────────────────────────────────────────
 @login_required
 def campaign_list(request):
-    campaigns = Campaign.objects.all()
-    return render(request, 'core/campaign_list.html', {'campaigns': campaigns})
+    campaigns = Campaign.objects.all().order_by('-id') # atau sesuai urutan yang kamu buat
+    
+    # Ambil tanggal hari ini
+    today = timezone.now().date()
+    
+    # Hitung campaign yang 'is_active' dicentang DAN tanggal hari ini masuk dalam periode
+    active_count = Campaign.objects.filter(
+        is_active=True,
+        start_date__lte=today,
+        end_date__gte=today
+    ).count()
 
+    context = {
+        'campaigns': campaigns,
+        'active_count': active_count
+    }
+    return render(request, 'core/campaign_list.html', context)
 
 @login_required
 def campaign_add(request):
@@ -212,6 +262,22 @@ def campaign_add(request):
         return redirect('campaign_list')
     return render(request, 'core/campaign_form.html', {'form': form, 'title': 'Buat Campaign Baru'})
 
+@login_required
+def campaign_detail(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
+    
+    # Menarik daftar klien yang sesuai dengan target tier campaign
+    if campaign.target_tier == 'all':
+        targeted_customers = Customer.objects.all()
+    else:
+        targeted_customers = Customer.objects.filter(loyalty__tier=campaign.target_tier)
+        
+    context = {
+        'campaign': campaign,
+        'targeted_customers': targeted_customers,
+        'target_count': targeted_customers.count()
+    }
+    return render(request, 'core/campaign_detail.html', context)
 
 @login_required
 def campaign_edit(request, pk):
@@ -232,3 +298,35 @@ def campaign_delete(request, pk):
         messages.success(request, 'Campaign berhasil dihapus.')
         return redirect('campaign_list')
     return render(request, 'core/campaign_confirm_delete.html', {'campaign': campaign})
+
+
+@login_required
+def revenue_chart_data(request):
+    period = request.GET.get('period', '6m') # Default 6 bulan
+    today = timezone.now()
+
+    # Logika filter waktu
+    if period == '6m':
+        start_date = today - timedelta(days=180)
+        query = Transaction.objects.filter(date__gte=start_date)
+    elif period == '1y':
+        start_date = today - timedelta(days=365)
+        query = Transaction.objects.filter(date__gte=start_date)
+    else: # 'all' / Semua Waktu
+        query = Transaction.objects.all()
+
+    # Kelompokkan data berdasarkan tanggal
+    recent_txn = (
+        query
+        .values('date__date')
+        .annotate(total=Sum('amount'))
+        .order_by('date__date')
+    )
+
+    labels = [str(r['date__date']) for r in recent_txn]
+    data = [float(r['total']) for r in recent_txn]
+
+    return JsonResponse({
+        'labels': labels,
+        'data': data
+    })

@@ -43,14 +43,14 @@ class Customer(models.Model):
     phone           = models.CharField(max_length=20, blank=True, verbose_name='No. Telepon')
 
     # Preferensi Belanja
-    purchase_category     = models.CharField(max_length=100, verbose_name='Kategori Pembelian')
-    purchase_channel      = models.CharField(max_length=30, choices=CHANNEL_CHOICES, verbose_name='Channel Pembelian')
+    purchase_category      = models.CharField(max_length=100, verbose_name='Kategori Pembelian')
+    purchase_channel       = models.CharField(max_length=30, choices=CHANNEL_CHOICES, verbose_name='Channel Pembelian')
     social_media_influence = models.CharField(max_length=20, choices=INFLUENCE_CHOICES, verbose_name='Pengaruh Media Sosial')
-    discount_sensitivity  = models.CharField(max_length=30, choices=SENSITIVITY_CHOICES, verbose_name='Sensitivitas Diskon')
-    device_used           = models.CharField(max_length=30, verbose_name='Perangkat yang Digunakan')
-    payment_method        = models.CharField(max_length=30, verbose_name='Metode Pembayaran')
-    shipping_preference   = models.CharField(max_length=30, choices=SHIPPING_CHOICES, verbose_name='Preferensi Pengiriman')
-    purchase_intent       = models.CharField(max_length=20, choices=INTENT_CHOICES, verbose_name='Niat Pembelian')
+    discount_sensitivity   = models.CharField(max_length=30, choices=SENSITIVITY_CHOICES, verbose_name='Sensitivitas Diskon')
+    device_used            = models.CharField(max_length=30, verbose_name='Perangkat yang Digunakan')
+    payment_method         = models.CharField(max_length=30, verbose_name='Metode Pembayaran')
+    shipping_preference    = models.CharField(max_length=30, choices=SHIPPING_CHOICES, verbose_name='Preferensi Pengiriman')
+    purchase_intent        = models.CharField(max_length=20, choices=INTENT_CHOICES, verbose_name='Niat Pembelian')
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -78,17 +78,17 @@ class Transaction(models.Model):
         ('Other', 'Other'),
     ]
 
-    customer        = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='transactions')
-    amount          = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Total Transaksi')
-    date            = models.DateTimeField(default=timezone.now, verbose_name='Tanggal Transaksi')
-    payment_method  = models.CharField(max_length=30, choices=PAYMENT_CHOICES, verbose_name='Metode Pembayaran')
-    discount_used   = models.BooleanField(default=False, verbose_name='Pakai Diskon?')
-    frequency       = models.IntegerField(default=1, verbose_name='Frekuensi Pembelian')
-    return_rate     = models.IntegerField(default=0, verbose_name='Return Rate')
-    satisfaction    = models.IntegerField(default=5, verbose_name='Kepuasan Pelanggan')
+    customer         = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='transactions')
+    amount           = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Total Transaksi')
+    date             = models.DateTimeField(default=timezone.now, verbose_name='Tanggal Transaksi')
+    payment_method   = models.CharField(max_length=30, choices=PAYMENT_CHOICES, verbose_name='Metode Pembayaran')
+    discount_used    = models.BooleanField(default=False, verbose_name='Pakai Diskon?')
+    frequency        = models.IntegerField(default=1, verbose_name='Frekuensi Pembelian')
+    return_rate      = models.IntegerField(default=0, verbose_name='Return Rate')
+    satisfaction     = models.IntegerField(default=5, verbose_name='Kepuasan Pelanggan')
     time_to_decision = models.IntegerField(default=1, verbose_name='Waktu Keputusan (hari)')
-    notes           = models.TextField(blank=True, verbose_name='Catatan')
-    created_at      = models.DateTimeField(auto_now_add=True)
+    notes            = models.TextField(blank=True, verbose_name='Catatan')
+    created_at       = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -185,10 +185,20 @@ class Campaign(models.Model):
     is_active           = models.BooleanField(default=True, verbose_name='Aktif?')
     created_at          = models.DateTimeField(auto_now_add=True)
 
+
     def is_running(self):
         today = timezone.now().date()
-        return self.start_date <= today <= self.end_date and self.is_active
+        return self.start_date <= today <= self.end_date
+    @property
+    def is_upcoming(self):
+        today = timezone.now().date()
+        return self.start_date > today
 
+    @property
+    def is_completed(self):
+        today = timezone.now().date()
+        return self.end_date < today
+    
     def get_target_count(self):
         if self.target_tier == 'all':
             return Customer.objects.count()
@@ -216,6 +226,15 @@ class PredictionResult(models.Model):
         elif self.churn_probability >= 40:
             return ('warning', 'Risiko Sedang')
         return ('success', 'Risiko Rendah')
+
+    @property
+    def recommendation(self):
+        if self.churn_probability >= 70:
+            return "Risiko Tinggi! Kirim campaign retensi agresif (Voucher: COMEBACK30) untuk mencegah churn."
+        elif self.churn_probability >= 40:
+            return "Risiko Sedang. Berikan insentif moderat atau upselling fitur (Voucher: TRYAI15) agar kembali aktif."
+        else:
+            return "Risiko Rendah (Loyal). Pertahankan hubungan dengan penawaran eksklusif tier (Voucher: VIPONLY10)."
 
     def __str__(self):
         return f"{self.customer.name} - Churn: {self.churn_probability:.1f}%"

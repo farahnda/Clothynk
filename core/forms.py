@@ -58,8 +58,19 @@ class TransactionForm(forms.ModelForm):
 
 
 class CampaignForm(forms.ModelForm):
-    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
-    end_date   = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
+    # Tambahkan format='%Y-%m-%d' agar tanggal lama muncul saat diedit
+    start_date = forms.DateField(
+        widget=forms.DateInput(
+            format='%Y-%m-%d', 
+            attrs={'type': 'date', 'class': 'form-control'}
+        )
+    )
+    end_date = forms.DateField(
+        widget=forms.DateInput(
+            format='%Y-%m-%d', 
+            attrs={'type': 'date', 'class': 'form-control'}
+        )
+    )
 
     class Meta:
         model = Campaign

@@ -9,6 +9,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    
     :root {
       --sidebar-w: 250px;
       --brand: #0A0A0A;
@@ -235,9 +236,38 @@
       flex-shrink: 0;
     }
     .prediction-bar { height: 8px; border-radius: 10px; }
-    .churn-high { color: #EF4444; }
-    .churn-medium { color: #F59E0B; }
-    .churn-low { color: #10B981; }
+    /* Warna Text Status */
+    .churn-high { color: #EF4444; font-weight: 600; }
+    .churn-medium { color: #F59E0B; font-weight: 600; }
+    .churn-low { color: #10B981; font-weight: 600; }
+
+    /* Warna Progress Bar Background */
+    .bg-churn { background-color: #EF4444 !important; }
+    .bg-repurchase { background-color: #10B981 !important; }
+    
+
+  /* Badge Status Color Helper */
+    .badge-status {
+        padding: 2px 8px;
+        font-size: 0.72rem;
+        border-radius: 4px;
+    }
+    .bg-success-light { background: #D1FAE5; color: #065F46; }
+    .bg-warning-light { background: #FEF3C7; color: #92400E; }
+    .bg-danger-light  { background: #FEE2E2; color: #991B1B; }
+
+    /* Status Border */
+    .border-running { border-left: 4px solid #10B981 !important; }
+    .border-inactive { border-left: 4px solid #E0E0E0 !important; }
+    
+    /* Card Hover Effect untuk kesan profesional */
+    .campaign-card { transition: transform 0.2s, box-shadow 0.2s; }
+    .campaign-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1) !important; }
+
+    .campaign-running { border-left: 4px solid #10B981 !important; }
+    .campaign-upcoming { border-left: 4px solid #3B82F6 !important; }
+    .campaign-completed { border-left: 4px solid #9CA3AF !important; opacity: 0.75; background-color: #F9FAFB !important; }
+    
   </style>
 </head>
 <body>

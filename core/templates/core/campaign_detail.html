@@ -1,0 +1,96 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ campaign.name }}{% endblock %}
+{% block page_title %}Detail Campaign{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <a href="{% url 'campaign_list' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;">← Kembali</a>
+  <div class="d-flex gap-2">
+    <a href="{% url 'campaign_edit' campaign.pk %}" class="btn btn-sm btn-outline-primary" style="border-radius:8px;">Edit Campaign</a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-5">
+    <div class="card h-100">
+      <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+            <h5 class="fw-bold mb-0">{{ campaign.name }}</h5>
+            
+            {% if not campaign.is_active %}
+                <span class="badge bg-light text-secondary">⚫ Nonaktif</span>
+            {% elif campaign.is_running %}
+                <span class="badge" style="background:#D1FAE5;color:#065F46;">🟢 Aktif</span>
+            {% elif campaign.is_upcoming %}
+                <span class="badge" style="background:#DBEAFE;color:#1E3A8A;">⏳ Belum Mulai</span>
+            {% elif campaign.is_completed %}
+                <span class="badge" style="background:#F3F4F6;color:#374151;">🏁 Selesai</span>
+            {% endif %}
+        </div>
+        
+        <p class="text-muted" style="font-size:0.9rem;">{{ campaign.description }}</p>
+        
+        <hr class="my-4">
+        
+        <div class="mb-3 d-flex justify-content-between">
+          <span class="text-muted" style="font-size:0.85rem;">Kode Voucher</span>
+          <span class="badge mono" style="background:#EEF2FF;color:#6C63FF;font-size:0.85rem;">{{ campaign.voucher_code }}</span>
+        </div>
+        <div class="mb-3 d-flex justify-content-between">
+          <span class="text-muted" style="font-size:0.85rem;">Diskon Diberikan</span>
+          <span class="fw-bold text-dark">{{ campaign.discount_percentage }}%</span>
+        </div>
+        <div class="mb-3 d-flex justify-content-between">
+          <span class="text-muted" style="font-size:0.85rem;">Target Tier</span>
+          <span class="fw-bold text-dark text-capitalize">{{ campaign.get_target_tier_display }}</span>
+        </div>
+        <div class="mb-3 d-flex justify-content-between">
+          <span class="text-muted" style="font-size:0.85rem;">Periode Pelaksanaan</span>
+          <span class="fw-bold text-dark" style="font-size:0.85rem;">{{ campaign.start_date|date:"d M Y" }} – {{ campaign.end_date|date:"d M Y" }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-7">
+    <div class="card h-100">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+        <h6 class="fw-bold mb-0">Target Audience</h6>
+        <span class="badge bg-light text-dark">{{ target_count }} Klien Cocok</span>
+      </div>
+      <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+        <table class="table table-hover mb-0" style="font-size: 0.85rem;">
+          <thead class="table-light" style="position: sticky; top: 0;">
+            <tr>
+              <th>ID Klien</th>
+              <th>Nama Perusahaan / Klien</th>
+              <th>Email</th>
+              <th>Status Loyalty</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for customer in targeted_customers %}
+            <tr>
+              <td class="text-muted mono">{{ customer.customer_id }}</td>
+              <td class="fw-600">{{ customer.name }}</td>
+              <td>{{ customer.email }}</td>
+              <td>
+                {% if customer.get_loyalty %}
+                  <span class="badge bg-light text-dark text-capitalize">● {{ customer.get_loyalty.tier }}</span>
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="text-center text-muted py-4">Tidak ada klien yang masuk dalam target tier ini.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

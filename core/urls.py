@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),
+    path('api/revenue-chart/', views.revenue_chart_data, name='revenue_chart_data'),
 
     # Customer
     path('pelanggan/', views.customer_list, name='customer_list'),
@@ -25,6 +26,7 @@ urlpatterns = [
     # Campaign
     path('campaign/', views.campaign_list, name='campaign_list'),
     path('campaign/tambah/', views.campaign_add, name='campaign_add'),
+    path('campaign/<int:pk>/', views.campaign_detail, name='campaign_detail'), 
     path('campaign/<int:pk>/edit/', views.campaign_edit, name='campaign_edit'),
     path('campaign/<int:pk>/hapus/', views.campaign_delete, name='campaign_delete'),
 ]
