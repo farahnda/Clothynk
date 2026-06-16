@@ -167,7 +167,7 @@
         {% for t in transactions %}
         <tr>
           <td class="ps-4" style="font-size:0.85rem;">{{ t.date|date:"d M Y" }}</td>
-          <td class="text-dark" style="font-size:0.85rem;">{{ t.customer.purchase_category }}</td>
+          <td class="text-dark" style="font-size:0.85rem;">{{ t.purchase_category }}</td>
           <td class="fw-bold text-dark" style="font-size:0.85rem;">${{ t.amount|floatformat:2 }}</td>
           <td style="font-size:0.85rem;">{{ t.payment_method }}</td>
           <td>{% if t.discount_used %}<span class="badge bg-success-light text-success px-2 py-1" style="font-size:0.7rem;">Yes</span>{% else %}<span class="text-muted">—</span>{% endif %}</td>
