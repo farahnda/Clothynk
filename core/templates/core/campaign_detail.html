@@ -4,21 +4,24 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <a href="{% url 'campaign_list' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;"><i class="bi bi-arrow-left me-1"></i> Back</a>
+  <a href="{% url 'campaign_list' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;">
+    <i class="bi bi-arrow-left me-1"></i> Back
+  </a>
   <div class="d-flex gap-2">
-    <a href="{% url 'campaign_edit' campaign.pk %}" class="btn btn-sm btn-outline-primary" style="border-radius:8px;"><i class="bi bi-pencil-square me-1"></i> Edit Campaign</a>
+    <a href="{% url 'campaign_edit' campaign.pk %}" class="btn btn-sm btn-outline-primary" style="border-radius:8px;">
+      <i class="bi bi-pencil-square me-1"></i> Edit Campaign
+    </a>
   </div>
 </div>
 
 <div class="row g-4">
   <div class="col-md-5">
-    <div class="card h-100">
-      <div class="card-body">
-      <div class="d-flex justify-content-between align-items-start mb-3">
+    <div class="card h-100 shadow-sm border-0" style="border-radius: 12px;">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-start mb-3">
             <h5 class="fw-bold mb-0">{{ campaign.name }}</h5>
-            
             {% if not campaign.is_active %}
-                <span class="badge bg-light text-secondary"> <i class="bi bi-pause-circle-fill me-1"></i>Inactive</span>
+                <span class="badge bg-light text-secondary"><i class="bi bi-pause-circle-fill me-1"></i>Inactive</span>
             {% elif campaign.is_running %}
                 <span class="badge" style="background:#D1FAE5;color:#065F46;"><i class="bi bi-play-circle-fill me-1"></i> Active</span>
             {% elif campaign.is_upcoming %}
@@ -48,12 +51,32 @@
           <span class="text-muted" style="font-size:0.85rem;">Campaign Period</span>
           <span class="fw-bold text-dark" style="font-size:0.85rem;">{{ campaign.start_date|date:"d M Y" }} – {{ campaign.end_date|date:"d M Y" }}</span>
         </div>
-      </div>
+
+        {% with tier=campaign.target_tier|lower %}
+        <div class="mt-4 pt-3 border-top">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-bold text-dark" style="font-size: 0.85rem;">Campaign Progress</span>
+                <span class="fw-bold" style="font-size: 0.85rem; color: {% if tier == 'bronze' %}#7A3E26{% elif tier == 'silver' %}#8A929A{% elif tier == 'gold' %}#C48425{% else %}#3C4450{% endif %};">
+                    {{ claim_percentage }}%
+                </span>
+            </div>
+            <div class="progress" style="height: 8px; border-radius: 4px; background-color: #F3F4F6;">
+                <div class="progress-bar" role="progressbar" 
+                     style="width: {{ claim_percentage }}%; 
+                            background-color: {% if tier == 'bronze' %}#7A3E26{% elif tier == 'silver' %}#8A929A{% elif tier == 'gold' %}#C48425{% else %}#3C4450{% endif %};">
+                </div>
+            </div>
+            <div class="mt-2 text-muted" style="font-size: 0.75rem;">
+                <strong>{{ claimed_count }}</strong> of <strong>{{ target_count }}</strong> customers have claimed this promo.
+            </div>
+        </div>
+        {% endwith %}
+      </div> 
     </div>
   </div>
 
   <div class="col-md-7">
-    <div class="card h-100">
+    <div class="card h-100 shadow-sm border-0" style="border-radius: 12px;">
       <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
         <h6 class="fw-bold mb-0"><i class="bi bi-people-fill me-2"></i>Target Audience</h6>
         <span class="badge bg-light text-dark">{{ target_count }} Matching Customers</span>
@@ -72,19 +95,22 @@
             {% for customer in targeted_customers %}
             <tr>
               <td class="text-muted mono">{{ customer.customer_id }}</td>
-              <td class="fw-600">{{ customer.name }}</td>
+              <td class="fw-bold">{{ customer.name }}</td>
               <td>{{ customer.email }}</td>
               <td>
-                {% if customer.get_loyalty %}
-                  <span class="badge bg-light text-dark text-capitalize"><i class="bi bi-award-fill me-1"></i> {{ customer.get_loyalty.tier }}</span>
-                {% else %}
-                  -
-                {% endif %}
+                  {% if customer.get_loyalty %}
+                      <span class="tier-badge tier-{{ customer.get_loyalty.tier|lower }}">
+                          <i class="bi bi-award-fill"></i>
+                          {{ customer.get_loyalty.tier|upper }}
+                      </span>
+                  {% else %}
+                      <span class="text-muted">-</span>
+                  {% endif %}
               </td>
             </tr>
             {% empty %}
             <tr>
-              <td colspan="4" class="text-center text-muted py-4">No customers match this campaign's target tier.</td>
+              <td colspan="4" class="text-center text-muted py-4">No customers match this tier.</td>
             </tr>
             {% endfor %}
           </tbody>

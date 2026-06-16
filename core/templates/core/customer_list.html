@@ -3,10 +3,37 @@
 {% block page_title %}Customer List{% endblock %}
 
 {% block content %}
+<style>
+  /* Gaya Soft Badge untuk tabel Customer */
+  .tier-badge-custom {
+      font-size: 0.7rem;
+      font-weight: 700; 
+      padding: 0.4em 0.8em;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+  }
+  .tier-bronze { 
+      background-color: rgba(122, 62, 38, 0.15) !important; 
+      color: #7A3E26 !important; 
+  }
+  .tier-silver { 
+      background-color: rgba(138, 146, 154, 0.15) !important; 
+      color: #8A929A !important; 
+  }
+  .tier-gold { 
+      background-color: rgba(196, 132, 37, 0.15) !important; 
+      color: #C48425 !important; 
+  }
+  .tier-platinum { 
+      background-color: rgba(60, 68, 80, 0.15) !important; 
+      color: #3C4450 !important; 
+  }
+</style>
+
 <div class="d-flex justify-content-between align-items-center mb-4">
   <form class="d-flex gap-2" method="get">
-    <input type="text" name="q" value="{{ q }}" placeholder="Search name, email, ID..." class="form-control" style="width:260px">
-    <select name="tier" class="form-select" style="width:160px">
+    <input type="text" name="q" value="{{ q }}" placeholder="Search name, email, ID..." class="form-control" style="width:260px; font-size: 0.85rem;">
+    <select name="tier" class="form-select" style="width:160px; font-size: 0.85rem;">
       <option value="">All Tiers</option>
       <option value="bronze" {% if tier == 'bronze' %}selected{% endif %}>Bronze</option>
       <option value="silver" {% if tier == 'silver' %}selected{% endif %}>Silver</option>
@@ -15,15 +42,15 @@
     </select>
     <button class="btn btn-accent px-3" type="submit"><i class="bi bi-search"></i></button>
   </form>
-  <a href="{% url 'customer_add' %}" class="btn btn-accent"><i class="bi bi-plus-lg me-1"></i>Add Customer</a>
+  <a href="{% url 'customer_add' %}" class="btn btn-accent" style="font-size: 0.85rem;"><i class="bi bi-plus-lg me-1"></i>Add Customer</a>
 </div>
 
-<div class="card">
+<div class="card shadow-sm border-0" style="border-radius:12px;">
   <div class="table-responsive">
-    <table class="table mb-0">
-      <thead>
+    <table class="table align-middle mb-0">
+      <thead class="table-light text-muted" style="font-size:0.75rem; letter-spacing:0.5px; text-transform: uppercase;">
         <tr>
-          <th>Customer</th>
+          <th class="ps-4 py-3">Customer</th>
           <th>Customer ID</th>
           <th>Gender</th>
           <th>Location</th>
@@ -36,37 +63,43 @@
       <tbody>
         {% for c in customers %}
         <tr>
-          <td>
+          <td class="ps-4">
             <div class="d-flex align-items-center gap-2">
-              <div class="avatar-circle">{{ c.name|first }}</div>
+              <div class="avatar-circle bg-dark text-white d-flex align-items-center justify-content-center rounded-circle" style="width:32px; height:32px; font-size:0.8rem;">
+                {{ c.name|first }}
+              </div>
               <div>
-                <div class="fw-600">{{ c.name }}</div>
+                <div class="fw-bold text-dark" style="font-size: 0.9rem;">{{ c.name }}</div>
                 <div class="text-muted" style="font-size:.75rem">{{ c.email }}</div>
               </div>
             </div>
           </td>
           <td><span class="mono text-muted" style="font-size:.8rem">{{ c.customer_id }}</span></td>
-          <td>{{ c.gender }}</td>
-          <td>{{ c.location }}</td>
-          <td>{{ c.purchase_category }}</td>
-          <td>{{ c.get_purchase_channel_display }}</td>
+          <td style="font-size: 0.85rem;">{{ c.gender }}</td>
+          <td style="font-size: 0.85rem;">{{ c.location }}</td>
+          <td style="font-size: 0.85rem;">{{ c.purchase_category }}</td>
+          <td style="font-size: 0.85rem;">{{ c.get_purchase_channel_display }}</td>
           <td>
             {% if c.loyalty %}
-              <span class="tier-badge tier-{{ c.loyalty.tier }}"><i class="bi bi-award-fill me-1"></i> {{ c.loyalty.get_tier_display }}</span>
+              <span class="badge rounded-pill tier-badge-custom tier-{{ c.loyalty.tier }}">
+                <i class="bi bi-award-fill me-1"></i> {{ c.loyalty.get_tier_display }}
+              </span>
             {% else %}
-              <span class="text-muted" style="font-size:.8rem">—</span>
+              <span class="badge rounded-pill tier-badge-custom tier-bronze">
+                <i class="bi bi-award-fill me-1"></i> Bronze
+              </span>
             {% endif %}
           </td>
-          <td>
-            <a href="{% url 'customer_detail' c.pk %}" class="btn btn-sm btn-outline-secondary">Details</a>
+          <td class="pe-4 text-end">
+            <a href="{% url 'customer_detail' c.pk %}" class="btn btn-sm btn-outline-secondary" style="border-radius: 8px; font-size: 0.75rem;">Details</a>
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="8" class="text-center text-muted py-4">No customers found.</td></tr>
+        <tr><td colspan="8" class="text-center text-muted py-5">No customers found.</td></tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
-<div class="mt-2 text-muted" style="font-size:.8rem">Displaying {{ customers|length }} customers</div>
+<div class="mt-3 text-muted" style="font-size:.8rem">Displaying {{ customers|length }} customers</div>
 {% endblock %}

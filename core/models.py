@@ -131,11 +131,13 @@ class LoyaltyProfile(models.Model):
         'gold':     (500,   1000),
         'platinum': (1000,  float('inf')),
     }
+    
+    # Warna sudah di-update menggunakan Hex Code Premium yang baru
     TIER_COLORS = {
-        'bronze': '#cd7f32',
-        'silver': '#aaa9ad',
-        'gold':   '#ffd700',
-        'platinum': '#b5c4de',
+        'bronze': '#7A3E26',
+        'silver': '#8A929A',
+        'gold':   '#C48425',
+        'platinum': '#3C4450',
     }
 
     @classmethod
@@ -167,7 +169,14 @@ class LoyaltyProfile(models.Model):
             if t == self.tier and i < len(thresholds) - 1:
                 next_tier, next_val = thresholds[i + 1]
                 remaining = next_val - float(self.total_spending)
-                progress = (float(self.total_spending) - val) / (next_val - val) * 100
+                
+                # Hitung persentase mentah
+                raw_progress = (float(self.total_spending) - val) / (next_val - val) * 100
+                
+                # Gunakan int() untuk "memotong" desimal alih-alih membulatkannya
+                # Mencegah 99.8% menjadi 100% palsu
+                progress = int(raw_progress) 
+                
                 return {'next_tier': next_tier, 'remaining': remaining, 'progress': min(progress, 100)}
         return {'next_tier': None, 'remaining': 0, 'progress': 100}
 

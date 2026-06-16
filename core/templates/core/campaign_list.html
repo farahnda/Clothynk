@@ -18,60 +18,66 @@
     <div class="col-md-6">
         <div class="card h-100 shadow-sm border-0" style="border-radius: 12px;">
             <div class="card-body p-4">
-                
+                <!-- Header Card -->
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <h6 class="fw-bold mb-0 text-dark" style="font-size: 1.05rem;">{{ campaign.name }}</h6>
-                    
                     {% if not campaign.is_active %}
-                        <span class="badge bg-light text-secondary" style="font-size:0.7rem; font-weight: 600;"><i class="bi bi-pause-circle-fill me-1"> </i>Inactive</span>
+                        <span class="badge bg-light text-secondary" style="font-size:0.7rem;"><i class="bi bi-pause-circle-fill me-1"></i>Inactive</span>
                     {% elif campaign.is_running %}
-                        <span class="badge" style="background:#D1FAE5; color:#059669; font-size:0.7rem; font-weight: 600;"><i class="bi bi-play-circle-fill me-1"></i> Active</span>
+                        <span class="badge" style="background:#D1FAE5; color:#059669; font-size:0.7rem;"><i class="bi bi-play-circle-fill me-1"></i> Active</span>
                     {% elif campaign.is_upcoming %}
-                        <span class="badge" style="background:#DBEAFE; color:#2563EB; font-size:0.7rem; font-weight: 600;"><i class="bi bi-clock-fill me-1"></i> Upcoming</span>
+                        <span class="badge" style="background:#DBEAFE; color:#2563EB; font-size:0.7rem;"><i class="bi bi-clock-fill me-1"></i> Upcoming</span>
                     {% elif campaign.is_completed %}
-                        <span class="badge" style="background:#F3F4F6; color:#6B7280; font-size:0.7rem; font-weight: 600;"><i class="bi bi-check-circle-fill me-1"></i> Completed</span>
+                        <span class="badge" style="background:#F3F4F6; color:#6B7280; font-size:0.7rem;"><i class="bi bi-check-circle-fill me-1"></i> Completed</span>
                     {% endif %}
                 </div>
                 
-                <p class="text-muted mb-4" style="font-size:0.85rem; line-height: 1.6;">
-                    {{ campaign.description|truncatechars:120 }}
-                </p>
+                <p class="text-muted mb-4" style="font-size:0.85rem; line-height: 1.6;">{{ campaign.description|truncatechars:120 }}</p>
                 
-                <div class="d-flex flex-wrap gap-2 mb-4">
-                    <span class="text-muted" style="font-size:0.75rem;">
-                        <i class="bi bi-bullseye me-1"></i>Target: {{ campaign.get_target_tier_display }}
-                    </span>
-                    <span class="text-muted" style="font-size:0.75rem;">
-                        <i class="bi bi-tag me-1"></i>Diskon {{ campaign.discount_percentage }}%
-                    </span>
+                <!-- Info Utama -->
+                <div class="d-flex flex-wrap gap-3 mb-4">
+                    <span class="text-muted" style="font-size:0.75rem;"><i class="bi bi-bullseye me-1"></i>Target: {{ campaign.get_target_tier_display }}</span>
+                    <span class="text-muted" style="font-size:0.75rem;"><i class="bi bi-tag me-1"></i>Diskon {{ campaign.discount_percentage }}%</span>
                     {% if campaign.voucher_code %}
-                    <span class="text-dark" style="font-size:0.75rem; font-weight: 600; font-family: monospace;">
-                        <i class="bi bi-ticket-perforated me-1"></i>{{ campaign.voucher_code }}
-                    </span>
+                    <span class="text-dark" style="font-size:0.75rem; font-weight: 600; font-family: monospace;"><i class="bi bi-ticket-perforated me-1"></i>{{ campaign.voucher_code }}</span>
                     {% endif %}
                 </div>
+
+                <!-- Progress Bar Klaim (Dibuat Full Width agar tidak berantakan) -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span style="font-size: 0.75rem; color: #6B7280;">Progress Klaim</span>
+                        <span style="font-size: 0.75rem; font-weight: 600; color: #6C63FF;">
+                            {{ campaign.claimed_count }} / {{ campaign.get_target_count }} Claimed
+                        </span>
+                    </div>
+                    <div class="progress" style="height: 8px; border-radius: 4px; background-color: #F3F4F6;">
+                        <div class="progress-bar" role="progressbar" 
+                             style="width: {{ campaign.claim_percentage }}%; background-color: #6C63FF;" 
+                             aria-valuenow="{{ campaign.claim_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                </div>
                 
+                <!-- Footer Card -->
                 <div class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top">
                     <small class="text-muted" style="font-size:0.75rem; font-weight: 500;">
                         <i class="bi bi-calendar-event me-1"></i> {{ campaign.start_date|date:"d M Y" }} – {{ campaign.end_date|date:"d M Y" }}
                     </small>
                     <div class="d-flex gap-2">
-                        <a href="{% url 'campaign_detail' campaign.pk %}" class="btn btn-sm btn-light px-3" style="border-radius:6px; font-weight:500; font-size:0.8rem; border: 1px solid #E5E7EB;">Detail</a>
-                        <a href="{% url 'campaign_edit' campaign.pk %}" class="btn btn-sm btn-outline-primary px-3" style="border-radius:6px; font-weight:500; font-size:0.8rem;">Edit</a>
-                    </div>
+    <a href="{% url 'campaign_detail' campaign.pk %}" 
+       class="btn btn-sm btn-outline-secondary px-3" 
+       style="border-radius:8px; font-weight:500; font-size:0.8rem;">
+       <i class="bi bi-eye me-1"></i> Detail
+    </a>
+    
+    <a href="{% url 'campaign_edit' campaign.pk %}" 
+       class="btn btn-sm btn-primary px-3" 
+       style="border-radius:8px; font-weight:500; font-size:0.8rem;">
+       <i class="bi bi-pencil-square me-1"></i> Edit
+    </a>
+</div>
                 </div>
-
-            </div>
-        </div>
-    </div>
-    {% empty %}
-    <div class="col-12">
-        <div class="card shadow-sm border-0" style="border-radius: 12px; background: #F8F9FA;">
-            <div class="card-body text-center py-5 text-muted">
-                <i class="bi bi-inboxes text-secondary" style="font-size: 2.5rem;"></i>
-                <h5 class="mt-3 fw-bold text-dark">Belum Ada Campaign</h5>
-                <p style="font-size: 0.9rem;">Buat campaign pertamamu untuk mulai meningkatkan retensi pelanggan.</p>
-                <a href="{% url 'campaign_add' %}" class="btn btn-accent px-4 mt-2" style="border-radius: 8px;">Buat Campaign Baru</a>
             </div>
         </div>
     </div>

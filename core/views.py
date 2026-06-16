@@ -66,19 +66,36 @@ def dashboard(request):
     # 6. Transaksi Terbaru
     recent_transactions = Transaction.objects.select_related('customer').order_by('-date')[:5]
 
-   # 7. Campaign Teratas (BARU)
-    # Cari semua campaign yang sedang aktif saat ini
+# 7. Campaign Teratas & Penghitung Klaim Riil
     active_campaigns = Campaign.objects.filter(
         is_active=True, 
-        start_date__lte=today.date() if isinstance(today, timezone.datetime) else today,
-        end_date__gte=today.date() if isinstance(today, timezone.datetime) else today
+        start_date__lte=today.date(),
+        end_date__gte=today.date()
     )
 
-    # Pilih campaign dengan jumlah target audiens (get_target_count) paling banyak
+    top_campaign = None
+    claimed_count = 0
+    claim_percentage = 0
+
     if active_campaigns.exists():
         top_campaign = max(active_campaigns, key=lambda c: c.get_target_count())
-    else:
-        top_campaign = None
+        target_count = top_campaign.get_target_count() or 1
+
+        # Ambil customer ID berdasarkan target tier campaign
+        if top_campaign.target_tier == 'all':
+            target_customer_ids = Customer.objects.values_list('id', flat=True)
+        else:
+            target_customer_ids = LoyaltyProfile.objects.filter(tier=top_campaign.target_tier).values_list('customer_id', flat=True)
+
+        # Hitung transaksi yang menggunakan diskon (discount_used=True) dari target customer
+        claimed_count = Transaction.objects.filter(
+            customer_id__in=target_customer_ids,
+            discount_used=True,
+            date__date__gte=top_campaign.start_date,
+            date__date__lte=top_campaign.end_date
+        ).count()
+
+        claim_percentage = min(int((claimed_count / target_count) * 100), 100)
 
     context = {
         'total_customers': total_customers,
@@ -92,7 +109,9 @@ def dashboard(request):
         'total_churn_risk': total_churn_risk,
         'churn_risks': churn_risks,
         'recent_transactions': recent_transactions,
-        'top_campaign': top_campaign, # Kirim data campaign ke HTML
+        'top_campaign': top_campaign,
+        'claimed_count': claimed_count,
+        'claim_percentage': claim_percentage,
     }
     return render(request, 'core/dashboard.html', context)
 # ─── CUSTOMER ────────────────────────────────────────────────────────────────
@@ -250,23 +269,35 @@ def predict_single(request, pk):
 # ─── CAMPAIGN ────────────────────────────────────────────────────────────────
 @login_required
 def campaign_list(request):
-    campaigns = Campaign.objects.all().order_by('-id') # atau sesuai urutan yang kamu buat
-    
-    # Ambil tanggal hari ini
+    campaigns = Campaign.objects.all().order_by('-id')
     today = timezone.now().date()
     
-    # Hitung campaign yang 'is_active' dicentang DAN tanggal hari ini masuk dalam periode
-    active_count = Campaign.objects.filter(
-        is_active=True,
-        start_date__lte=today,
-        end_date__gte=today
-    ).count()
+    # Menghitung klaim untuk setiap campaign
+    for campaign in campaigns:
+        # Sama dengan logika di dashboard tadi
+        if campaign.target_tier == 'all':
+            target_customer_ids = Customer.objects.values_list('id', flat=True)
+        else:
+            target_customer_ids = LoyaltyProfile.objects.filter(
+                tier=campaign.target_tier
+            ).values_list('customer_id', flat=True)
+            
+        campaign.claimed_count = Transaction.objects.filter(
+            customer_id__in=target_customer_ids,
+            discount_used=True,
+            date__date__gte=campaign.start_date,
+            date__date__lte=campaign.end_date
+        ).count()
+        
+        target_count = campaign.get_target_count() or 1
+        campaign.claim_percentage = min(int((campaign.claimed_count / target_count) * 100), 100)
 
-    context = {
-        'campaigns': campaigns,
+    active_count = campaigns.filter(is_active=True, start_date__lte=today, end_date__gte=today).count()
+
+    return render(request, 'core/campaign_list.html', {
+        'campaigns': campaigns, 
         'active_count': active_count
-    }
-    return render(request, 'core/campaign_list.html', context)
+    })
 
 @login_required
 def campaign_add(request):
@@ -281,19 +312,32 @@ def campaign_add(request):
 def campaign_detail(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
     
-    # Menarik daftar klien yang sesuai dengan target tier campaign
+    # 1. Target Audience
     if campaign.target_tier == 'all':
         targeted_customers = Customer.objects.all()
     else:
         targeted_customers = Customer.objects.filter(loyalty__tier=campaign.target_tier)
+    
+    # 2. Hitung Klaim (Logika sama seperti di dashboard)
+    target_customer_ids = targeted_customers.values_list('id', flat=True)
+    claimed_count = Transaction.objects.filter(
+        customer_id__in=target_customer_ids,
+        discount_used=True,
+        date__date__gte=campaign.start_date,
+        date__date__lte=campaign.end_date
+    ).count()
+    
+    target_count = targeted_customers.count() or 1
+    claim_percentage = min(int((claimed_count / target_count) * 100), 100)
         
     context = {
         'campaign': campaign,
         'targeted_customers': targeted_customers,
-        'target_count': targeted_customers.count()
+        'target_count': target_count,
+        'claimed_count': claimed_count,
+        'claim_percentage': claim_percentage,
     }
     return render(request, 'core/campaign_detail.html', context)
-
 @login_required
 def campaign_edit(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
