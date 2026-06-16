@@ -255,8 +255,31 @@ def transaction_list(request):
     # Hitung total revenue keseluruhan (lakukan sebelum queryset diubah menjadi list)
     total = Transaction.objects.aggregate(total=Sum('amount'))['total'] or 0
     
-    # Ambil base queryset
-    transactions = Transaction.objects.select_related('customer')
+    transactions = Transaction.objects.all()
+    
+    # Ambil parameter dari URL
+    payment_method_query = request.GET.get('payment_method')
+    sort_query = request.GET.get('sort')
+    search_query = request.GET.get('q')
+
+    # Logika Filter
+    if payment_method_query:
+        transactions = transactions.filter(payment_method=payment_method_query)
+        
+    if search_query:
+        # Contoh jika ingin search by customer name
+        transactions = transactions.filter(customer__name__icontains=search_query)
+
+    # Logika Sorting
+    if sort_query:
+        transactions = transactions.order_by(sort_query)
+
+    context = {
+        'transactions': transactions,
+        'payment_method': payment_method_query, # Kirim balik ke template agar state <select> tersimpan
+        'sort': sort_query,
+        'q': search_query,
+    }
     
     # Daftar field yang diizinkan untuk ORM sorting (selain customer name)
     allowed_sort = [
@@ -335,20 +358,48 @@ def loyalty_list(request):
             tier=tier
         )
 
-    if sort == 'points_desc':
-        loyalties = loyalties.order_by('-points')
+    # Dictionary ini menerjemahkan value dari <select> dropdown ke format ORM Django
+    dropdown_mapping = {
+        'points_desc': '-points',
+        'points_asc': 'points',
+        'spending_desc': '-total_spending',
+        'spending_asc': 'total_spending',
+    }
 
-    elif sort == 'points_asc':
-        loyalties = loyalties.order_by('points')
+    allowed_header_sort = [
+        'customer__name', '-customer__name',
+        'tier', '-tier',
+        'points', '-points',
+        'total_spending', '-total_spending',
+        'is_member', '-is_member'
+    ]
 
-    elif sort == 'spending_desc':
-        loyalties = loyalties.order_by('-total_spending')
-
-    elif sort == 'spending_asc':
-        loyalties = loyalties.order_by('total_spending')
-
+    # Eksekusi Sorting
+    if sort in dropdown_mapping:
+        # Jika nilai sort berasal dari dropdown
+        loyalties = loyalties.order_by(dropdown_mapping[sort])
+    elif sort in allowed_header_sort:
+        # Jika nilai sort berasal dari header tabel
+        loyalties = loyalties.order_by(sort)
     else:
+        # Fallback (Default sorting jika tidak ada parameter atau parameternya ngaco)
         loyalties = loyalties.order_by('-total_spending')
+        sort = 'spending_desc' # Kembalikan nilai ke value dropdown agar state tetap terpilih
+
+    # if sort == 'points_desc':
+    #     loyalties = loyalties.order_by('-points')
+
+    # elif sort == 'points_asc':
+    #     loyalties = loyalties.order_by('points')
+
+    # elif sort == 'spending_desc':
+    #     loyalties = loyalties.order_by('-total_spending')
+
+    # elif sort == 'spending_asc':
+    #     loyalties = loyalties.order_by('total_spending')
+
+    # else:
+    #     loyalties = loyalties.order_by('-total_spending')
 
     tier_counts = {
         'bronze': LoyaltyProfile.objects.filter(tier='bronze').count(),

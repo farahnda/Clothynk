@@ -59,6 +59,25 @@
       letter-spacing: 0.5px;
       text-transform: uppercase;
   }
+
+  .sort-link {
+      color: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: 0.2s;
+  }
+
+  .sort-link:hover {
+      color: #0d6efd !important;
+  }
+
+  .sort-icon {
+      font-size: 0.75rem;
+  }
+
 </style>
 
 <div class="row g-3 mb-4">
@@ -147,11 +166,71 @@
     <table class="table align-middle mb-0">
       <thead class="table-light text-muted" style="font-size:0.75rem; letter-spacing:0.5px;">
         <tr>
-          <th class="ps-4 py-3">CUSTOMER</th>
-          <th>TIER</th>
-          <th>POINTS</th>
-          <th>TOTAL SPENDING</th>
-          <th>MEMBER</th>
+          <th class="ps-4 py-3">
+              <a class="sort-link" data-bs-toggle="tooltip" title="Sort by Customer"
+                href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'customer__name' %}-customer__name{% else %}customer__name{% endif %}">
+                  CUSTOMER
+                  {% if sort == 'customer__name' %}
+                      <i class="bi bi-sort-alpha-down sort-icon"></i>
+                  {% elif sort == '-customer__name' %}
+                      <i class="bi bi-sort-alpha-down-alt sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
+          <th>
+              <a class="sort-link" data-bs-toggle="tooltip" title="Sort by Tier"
+                href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'tier' %}-tier{% else %}tier{% endif %}">
+                  TIER
+                  {% if sort == 'tier' %}
+                      <i class="bi bi-arrow-up sort-icon"></i>
+                  {% elif sort == '-tier' %}
+                      <i class="bi bi-arrow-down sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
+          <th>
+              <a class="sort-link" data-bs-toggle="tooltip" title="Sort by Points"
+                href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'points' %}-points{% else %}points{% endif %}">
+                  POINTS
+                  {% if sort == 'points' %}
+                      <i class="bi bi-sort-numeric-down sort-icon"></i>
+                  {% elif sort == '-points' %}
+                      <i class="bi bi-sort-numeric-down-alt sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
+          <th>
+              <a class="sort-link" data-bs-toggle="tooltip" title="Sort by Spending"
+                href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'total_spending' %}-total_spending{% else %}total_spending{% endif %}">
+                  TOTAL SPENDING
+                  {% if sort == 'total_spending' %}
+                      <i class="bi bi-sort-numeric-down sort-icon"></i>
+                  {% elif sort == '-total_spending' %}
+                      <i class="bi bi-sort-numeric-down-alt sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
+          <th>
+              <a class="sort-link" data-bs-toggle="tooltip" title="Sort by Member Status"
+                href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'is_member' %}-is_member{% else %}is_member{% endif %}">
+                  MEMBER
+                  {% if sort == 'is_member' %}
+                      <i class="bi bi-arrow-down sort-icon"></i>
+                  {% elif sort == '-is_member' %}
+                      <i class="bi bi-arrow-up sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
           <th>PROGRESS</th>
         </tr>
       </thead>
