@@ -75,10 +75,18 @@
       <div class="card-body d-flex flex-column align-items-center justify-content-center">
         <canvas id="tierChart" width="200" height="200"></canvas>
       <div class="d-flex gap-2 flex-wrap justify-content-center mt-3">
-        <span class="badge" style="background:#7A3E26; color:white;">🥉 Bronze: {{ tier_counts.bronze|default:0 }}</span>
-        <span class="badge" style="background:#8A929A; color:white;">🥈 Silver: {{ tier_counts.silver|default:0 }}</span>
-        <span class="badge" style="background:#C48425; color:white;">🥇 Gold: {{ tier_counts.gold|default:0 }}</span>
-        <span class="badge" style="background:#3C4450; color:white;">💎 Platinum: {{ tier_counts.platinum|default:0 }}</span>
+          <span class="badge" style="background:#7A3E26; color:white;">
+              <i class="bi bi-award-fill me-1"></i> Bronze: {{ tier_counts.bronze|default:0 }}
+          </span>
+          <span class="badge" style="background:#8A929A; color:white;">
+              <i class="bi bi-award-fill me-1"></i> Silver: {{ tier_counts.silver|default:0 }}
+          </span>
+          <span class="badge" style="background:#C48425; color:white;">
+              <i class="bi bi-award-fill me-1"></i> Gold: {{ tier_counts.gold|default:0 }}
+          </span>
+          <span class="badge" style="background:#3C4450; color:white;">
+              <i class="bi bi-award-fill me-1"></i> Platinum: {{ tier_counts.platinum|default:0 }}
+          </span>
       </div>
       </div>
     </div>
