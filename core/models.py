@@ -251,7 +251,7 @@ class PredictionResult(models.Model):
     @property
     def voucher(self):
         # 1. Cari semua campaign yang sedang aktif hari ini
-        today = timezone.localDate()
+        today = timezone.localdate()
         active_campaigns = Campaign.objects.filter(
             is_active=True,
             start_date__lte=today,
