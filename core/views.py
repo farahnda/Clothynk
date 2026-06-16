@@ -646,7 +646,7 @@ def predict_single(request, pk):
 @login_required
 def campaign_list(request):
     campaigns = Campaign.objects.all().order_by('-id')
-    today = timezone.now().date()
+    today = timezone.localdate()
     
     # Menghitung klaim untuk setiap campaign
     for campaign in campaigns:
