@@ -31,7 +31,7 @@
 
 <div class="row g-3 mb-4">
     <div class="col-md-3"><div class="stat-card"><div><div class="stat-label">Total</div><div class="stat-value">{{ total_predicted }}</div></div></div></div>
-    <div class="col-md-3"><div class="stat-card"><div><div class="stat-label">Low Risk</div><div class="stat-value" style="color:#10B981;">{{ low_risk|length }}</div></div></div></div>
+    <div class="col-md-3"><div class="stat-card"><div><div class="stat-label">Low Risk</div><div class="stat-value text-success">{{ low_risk|length }}</div></div></div></div>
     <div class="col-md-3"><div class="stat-card"><div><div class="stat-label">Medium Risk</div><div class="stat-value" style="color:#F59E0B;">{{ medium_risk|length }}</div></div></div></div>
     <div class="col-md-3"><div class="stat-card"><div><div class="stat-label">High Risk</div><div class="stat-value" style="color:#EF4444;">{{ high_risk|length }}</div></div></div></div>
 </div>
@@ -43,7 +43,6 @@
 
             <div class="row g-3 align-items-center">
 
-                <!-- Search -->
                 <div class="col-xl-5 col-lg-12">
                     <input type="text"
                            name="q"
@@ -59,7 +58,6 @@
                            ">
                 </div>
 
-                <!-- Risk -->
                 <div class="col-xl-3 col-md-6">
                     <select name="risk"
                             class="form-select"
@@ -91,7 +89,6 @@
                     </select>
                 </div>
 
-                <!-- Sort -->
                 <div class="col-xl-3 col-md-6">
                     <select name="sort"
                             class="form-select"
@@ -120,7 +117,6 @@
                     </select>
                 </div>
 
-                <!-- Search Button -->
                 <div class="col-xl-1 col-md-12">
                     <button type="submit"
                             class="btn btn-accent w-100 d-flex align-items-center justify-content-center"
@@ -255,15 +251,14 @@
                                  border-radius:999px;
                                  background:#eef2ff;">
 
-                                <div class="progress-bar bg-repurchase"
+                                <div class="progress-bar bg-success"
                                      style="width:{{ pred.repurchase_probability|floatformat:0 }}%;">
                                 </div>
                             </div>
 
-                            <span style="
+                            <span class="text-success" style="
                                   min-width:48px;
                                   font-weight:700;
-                                  color:#10B981;
                                   font-size:.8rem;">
                                 {{ pred.repurchase_probability|floatformat:1 }}%
                             </span>
@@ -283,7 +278,7 @@
                                  background:#fee2e2;">
 
                                 <div class="progress-bar bg-churn"
-                                     style="width:{{ pred.churn_probability|floatformat:0 }}%;">
+                                     style="background-color: #EF4444; width:{{ pred.churn_probability|floatformat:0 }}%;">
                                 </div>
                             </div>
 
@@ -317,7 +312,6 @@
                         vertical-align:top;
                         max-width:360px;">
 
-                        <!-- Recommendation Text -->
                         <div style="
                             font-size:.85rem;
                             color:#334155;
@@ -326,7 +320,6 @@
                             {{ pred.recommendation }}
                         </div>
 
-                        <!-- Combined Voucher Badge -->
                         <span style="
                             display:inline-flex;
                             align-items:center;
@@ -343,7 +336,7 @@
                                 Voucher:
                             </span>
 
-                            <span style="color:#16a34a; font-weight:700;">
+                            <span class="text-success" style="font-weight:700;">
                                 {{ pred.voucher }}
                             </span>
 
