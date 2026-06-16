@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Sum, Count, Avg
+from django.db.models import Sum, Count, Avg, Q
 from django.utils import timezone
 from datetime import timedelta
 from django.http import JsonResponse
@@ -222,41 +222,151 @@ def transaction_add(request):
 # ─── LOYALTY ─────────────────────────────────────────────────────────────────
 @login_required
 def loyalty_list(request):
-    tier      = request.GET.get('tier', '')
-    loyalties = LoyaltyProfile.objects.select_related('customer').order_by('-total_spending')
+
+    q = request.GET.get('q', '')
+    tier = request.GET.get('tier', '')
+    sort = request.GET.get('sort', '')
+
+    loyalties = LoyaltyProfile.objects.select_related(
+        'customer'
+    )
+
+    if q:
+        loyalties = loyalties.filter(
+            Q(customer__name__icontains=q) |
+            Q(customer__email__icontains=q) |
+            Q(customer__customer_id__icontains=q)
+        )
+
     if tier:
-        loyalties = loyalties.filter(tier=tier)
+        loyalties = loyalties.filter(
+            tier=tier
+        )
+
+    if sort == 'points_desc':
+        loyalties = loyalties.order_by('-points')
+
+    elif sort == 'points_asc':
+        loyalties = loyalties.order_by('points')
+
+    elif sort == 'spending_desc':
+        loyalties = loyalties.order_by('-total_spending')
+
+    elif sort == 'spending_asc':
+        loyalties = loyalties.order_by('total_spending')
+
+    else:
+        loyalties = loyalties.order_by('-total_spending')
 
     tier_counts = {
-        'bronze':   LoyaltyProfile.objects.filter(tier='bronze').count(),
-        'silver':   LoyaltyProfile.objects.filter(tier='silver').count(),
-        'gold':     LoyaltyProfile.objects.filter(tier='gold').count(),
+        'bronze': LoyaltyProfile.objects.filter(tier='bronze').count(),
+        'silver': LoyaltyProfile.objects.filter(tier='silver').count(),
+        'gold': LoyaltyProfile.objects.filter(tier='gold').count(),
         'platinum': LoyaltyProfile.objects.filter(tier='platinum').count(),
     }
-    return render(request, 'core/loyalty_list.html', {'loyalties': loyalties, 'tier_counts': tier_counts, 'tier': tier})
 
+    return render(
+        request,
+        'core/loyalty_list.html',
+        {
+            'loyalties': loyalties,
+            'tier_counts': tier_counts,
+            'q': q,
+            'tier': tier,
+            'sort': sort,
+        }
+    )
 
 # ─── ANALYTICS / PREDIKSI ────────────────────────────────────────────────────
 @login_required
 def analytics(request):
+
     if request.method == 'POST':
         run_all_predictions()
-        messages.success(request, 'Prediction successfully run for all customers!')
+        messages.success(
+            request,
+            'Prediction successfully run for all customers!'
+        )
 
-    predictions = PredictionResult.objects.select_related('customer').order_by('-churn_probability')
-    high_risk   = predictions.filter(churn_probability__gte=70)
-    medium_risk = predictions.filter(churn_probability__gte=40, churn_probability__lt=70)
-    low_risk    = predictions.filter(churn_probability__lt=40)
+    q = request.GET.get('q', '')
+    risk = request.GET.get('risk', '')
+    sort = request.GET.get('sort', '')
+
+    predictions = PredictionResult.objects.select_related(
+        'customer'
+    )
+
+    # Search
+    if q:
+        predictions = predictions.filter(
+            Q(customer__name__icontains=q) |
+            Q(customer__email__icontains=q) |
+            Q(customer__customer_id__icontains=q)
+        )
+
+    # Risk Filter
+    if risk == 'high':
+        predictions = predictions.filter(
+            churn_probability__gte=70
+        )
+
+    elif risk == 'medium':
+        predictions = predictions.filter(
+            churn_probability__gte=40,
+            churn_probability__lt=70
+        )
+
+    elif risk == 'low':
+        predictions = predictions.filter(
+            churn_probability__lt=40
+        )
+
+    # Sorting
+    if sort == 'churn_desc':
+        predictions = predictions.order_by(
+            '-churn_probability'
+        )
+
+    elif sort == 'churn_asc':
+        predictions = predictions.order_by(
+            'churn_probability'
+        )
+
+    else:
+        predictions = predictions.order_by(
+            '-predicted_at'
+        )
+
+    high_risk = PredictionResult.objects.filter(
+        churn_probability__gte=70
+    )
+
+    medium_risk = PredictionResult.objects.filter(
+        churn_probability__gte=40,
+        churn_probability__lt=70
+    )
+
+    low_risk = PredictionResult.objects.filter(
+        churn_probability__lt=40
+    )
 
     context = {
         'predictions': predictions,
         'high_risk': high_risk,
         'medium_risk': medium_risk,
         'low_risk': low_risk,
-        'total_predicted': predictions.count(),
-    }
-    return render(request, 'core/analytics.html', context)
+        'total_predicted': PredictionResult.objects.count(),
 
+        'q': q,
+        'risk': risk,
+        'sort': sort,
+    }
+
+    return render(
+        request,
+        'core/analytics.html',
+        context
+    )
 
 @login_required
 def predict_single(request, pk):

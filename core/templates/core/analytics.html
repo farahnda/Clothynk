@@ -6,9 +6,9 @@
 {% block content %}
 <div class="card mb-4 border-0 shadow-sm" style="border-left:4px solid #6C63FF; background:linear-gradient(135deg,#F8F9FF,#fff);">
     <div class="card-body">
-        <div class="d-flex align-items-start gap-3">
+        <div class="d-flex align-items-center gap-3">
             <div class="prediction-icon">
-    <i class="bi bi-graph-up-arrow"></i>
+                <i class="bi bi-graph-up-arrow"></i>
             </div>            
             <div>
                 <h6 class="fw-bold mb-1">Logistic Regression — Predict Churn & Repurchase</h6>
@@ -36,58 +36,334 @@
     <div class="col-md-3"><div class="stat-card"><div><div class="stat-label">High Risk</div><div class="stat-value" style="color:#EF4444;">{{ high_risk|length }}</div></div></div></div>
 </div>
 
-<div class="card shadow-sm border-0">
-    <div class="card-header bg-white py-3 fw-bold">📋 Latest Prediction Results</div>
+<div class="card border-0 shadow-sm mb-4" style="border-radius:18px;">
+    <div class="card-body p-4">
+
+        <form method="get">
+
+            <div class="row g-3 align-items-center">
+
+                <!-- Search -->
+                <div class="col-xl-5 col-lg-12">
+                    <input type="text"
+                           name="q"
+                           value="{{ q }}"
+                           class="form-control"
+                           placeholder="Search customer name, email, or ID..."
+                           style="
+                                height:48px;
+                                border-radius:14px;
+                                border:1px solid #e2e8f0;
+                                font-size:.9rem;
+                                box-shadow:none;
+                           ">
+                </div>
+
+                <!-- Risk -->
+                <div class="col-xl-3 col-md-6">
+                    <select name="risk"
+                            class="form-select"
+                            style="
+                                height:48px;
+                                border-radius:14px;
+                                border:1px solid #e2e8f0;
+                                font-size:.9rem;
+                                font-weight:500;
+                                box-shadow:none;
+                                cursor:pointer;
+                            ">
+                        <option value="">Risk Level</option>
+
+                        <option value="high"
+                            {% if risk == 'high' %}selected{% endif %}>
+                            High Risk
+                        </option>
+
+                        <option value="medium"
+                            {% if risk == 'medium' %}selected{% endif %}>
+                            Medium Risk
+                        </option>
+
+                        <option value="low"
+                            {% if risk == 'low' %}selected{% endif %}>
+                            Low Risk
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Sort -->
+                <div class="col-xl-3 col-md-6">
+                    <select name="sort"
+                            class="form-select"
+                            style="
+                                height:48px;
+                                border-radius:14px;
+                                border:1px solid #e2e8f0;
+                                font-size:.9rem;
+                                font-weight:500;
+                                box-shadow:none;
+                                cursor:pointer;
+                            ">
+
+                        <option value="">Sort Results</option>
+
+                        <option value="churn_desc"
+                            {% if sort == 'churn_desc' %}selected{% endif %}>
+                            Highest Churn Risk
+                        </option>
+
+                        <option value="churn_asc"
+                            {% if sort == 'churn_asc' %}selected{% endif %}>
+                            Lowest Churn Risk
+                        </option>
+
+                    </select>
+                </div>
+
+                <!-- Search Button -->
+                <div class="col-xl-1 col-md-12">
+                    <button type="submit"
+                            class="btn btn-accent w-100 d-flex align-items-center justify-content-center"
+                            style="
+                                height:48px;
+                                border-radius:14px;
+                                min-width:48px;
+                            ">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<div class="card shadow-sm border-0"
+     style="
+     border-radius:20px;
+     overflow:hidden;
+     box-shadow:0 10px 30px rgba(15,23,42,.06);">
+
+    <div class="card-header bg-white"
+         style="
+         border-bottom:1px solid #f1f5f9;
+         padding:1rem 1.5rem;
+         font-weight:700;
+         color:#1e293b;">
+
+        <i class="bi bi-clipboard-data me-2" style="color:#6C63FF;"></i>
+        Prediction Results
+    </div>
+
     <div class="table-responsive">
         <table class="table align-middle mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th class="ps-4">Customer</th>
-                    <th>Status</th>
-                    <th>Repurchase Prob.</th>
-                    <th>Churn Prob.</th>
-                    <th>Recommendation</th>
-                    <th>Prediction Time</th>
+
+            <thead class="align-middle">
+                <tr style="background:#f8fafc;">
+                    <th class="ps-4"
+                        style="
+                        font-size:.75rem;
+                        font-weight:700;
+                        color:#64748b;
+                        border-color:#e2e8f0;">
+                        Customer
+                    </th>
+
+                    <th class="text-center"
+                        style="
+                        font-size:.75rem;
+                        font-weight:700;
+                        color:#64748b;
+                        border-color:#e2e8f0;">
+                        Status
+                    </th>
+
+                    <th class="text-center"
+                        style="
+                        font-size:.75rem;
+                        font-weight:700;
+                        color:#64748b;
+                        border-color:#e2e8f0;">
+                        Repurchase Prob.
+                    </th>
+
+                    <th class="text-center"
+                        style="
+                        font-size:.75rem;
+                        font-weight:700;
+                        color:#64748b;
+                        border-color:#e2e8f0;">
+                        Churn Prob.
+                    </th>
+
+                    <th class="text-center"
+                        style="
+                        font-size:.75rem;
+                        font-weight:700;
+                        color:#64748b;
+                        border-color:#e2e8f0;">
+                        Prediction Time
+                    </th>
+
+                    <th 
+                        style="
+                        font-size:.75rem;
+                        font-weight:700;
+                        color:#64748b;
+                        border-color:#e2e8f0;">
+                        Recommendation
+                    </th>
                 </tr>
             </thead>
+
             <tbody>
                 {% for pred in predictions %}
                 <tr>
-                    <td class="ps-4 fw-bold">{{ pred.customer.name }}</td>
-                    <td>
+
+                    <td class="ps-4" style="border-color:#e2e8f0;">
+                        <a href="{% url 'customer_detail' pred.customer.pk %}"
+                        class="text-decoration-none fw-bold text-dark"
+                        style="font-size:0.9rem;">
+                            {{ pred.customer.name }}
+                        </a>
+
+                        <div class="text-muted"
+                            style="font-size:0.75rem;font-family:monospace;">
+                            {{ pred.customer.customer_id }}
+                        </div>
+                    </td>
+
+                    <td class="text-center"
+                        style="border-color:#e2e8f0;">
                         {% with status=pred.get_risk_label %}
                         <span class="badge badge-status {% if status.0 == 'success' %}bg-success-light{% elif status.0 == 'warning' %}bg-warning-light{% else %}bg-danger-light{% endif %}">
                             {{ status.1 }}
                         </span>
                         {% endwith %}
                     </td>
-                    <td>
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="progress prediction-bar flex-grow-1">
-                                <div class="progress-bar bg-repurchase" style="--width: {{ pred.repurchase_probability|floatformat:0 }}%; width: var(--width);"></div>
+
+                    <td class="text-center"
+                        style="border-color:#e2e8f0;">
+                        <div class="d-flex align-items-center justify-content-center gap-2">
+
+                            <div class="progress"
+                                 style="
+                                 width:140px;
+                                 height:10px;
+                                 border-radius:999px;
+                                 background:#eef2ff;">
+
+                                <div class="progress-bar bg-repurchase"
+                                     style="width:{{ pred.repurchase_probability|floatformat:0 }}%;">
+                                </div>
                             </div>
-                            <span class="fw-bold" style="color:#10B981; font-size:0.8rem;">{{ pred.repurchase_probability|floatformat:1 }}%</span>
+
+                            <span style="
+                                  min-width:48px;
+                                  font-weight:700;
+                                  color:#10B981;
+                                  font-size:.8rem;">
+                                {{ pred.repurchase_probability|floatformat:1 }}%
+                            </span>
+
                         </div>
                     </td>
-                    <td>
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="progress prediction-bar flex-grow-1">
-                                <div class="progress-bar bg-churn" style="--width: {{ pred.churn_probability|floatformat:0 }}%; width: var(--width);"></div>
+
+                    <td class="text-center"
+                        style="border-color:#e2e8f0;">
+                        <div class="d-flex align-items-center justify-content-center gap-2">
+
+                            <div class="progress"
+                                 style="
+                                 width:140px;
+                                 height:10px;
+                                 border-radius:999px;
+                                 background:#fee2e2;">
+
+                                <div class="progress-bar bg-churn"
+                                     style="width:{{ pred.churn_probability|floatformat:0 }}%;">
+                                </div>
                             </div>
-                            <span class="fw-bold" style="color:#EF4444; font-size:0.8rem;">{{ pred.churn_probability|floatformat:1 }}%</span>
+
+                            <span style="
+                                  min-width:48px;
+                                  font-weight:700;
+                                  color:#EF4444;
+                                  font-size:.8rem;">
+                                {{ pred.churn_probability|floatformat:1 }}%
+                            </span>
+
                         </div>
                     </td>
-                    <td style="font-size:0.8rem; color:#666; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ pred.recommendation }}">
-                        {{ pred.recommendation }}
+
+                    <td class="text-center"
+                        style="border-color:#e2e8f0;">
+
+                        <div class="fw-semibold">
+                            {{ pred.predicted_at|date:"d M Y" }}
+                        </div>
+
+                        <small class="text-muted">
+                            at {{ pred.predicted_at|date:"H:i" }}
+                        </small>
+
                     </td>
-                    <td style="font-size:0.75rem; color:#aaa;">{{ pred.predicted_at|date:"d M Y H:i" }}</td>
+
+                    <td style="
+                        border-color:#e2e8f0;
+                        padding:16px;
+                        vertical-align:top;
+                        max-width:360px;">
+
+                        <!-- Recommendation Text -->
+                        <div style="
+                            font-size:.85rem;
+                            color:#334155;
+                            line-height:1.65;
+                            margin-bottom:10px;">
+                            {{ pred.recommendation }}
+                        </div>
+
+                        <!-- Combined Voucher Badge -->
+                        <span style="
+                            display:inline-flex;
+                            align-items:center;
+                            gap:6px;
+                            padding:5px 10px;
+                            font-size:.72rem;
+                            font-weight:600;
+                            border-radius:999px;
+                            border:1px solid #e2e8f0;
+                            background:#f8fafc;
+                            color:#64748b;">
+
+                            <span style="font-weight:500;">
+                                Voucher:
+                            </span>
+
+                            <span style="color:#16a34a; font-weight:700;">
+                                {{ pred.voucher }}
+                            </span>
+
+                        </span>
+
+                    </td>
+
                 </tr>
+
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="text-center py-5 text-muted">No predictions available.</td>
+                    <td colspan="6"
+                        class="text-center py-5 text-muted"
+                        style="border-color:#e2e8f0;">
+                        No predictions available.
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
+
         </table>
     </div>
 </div>

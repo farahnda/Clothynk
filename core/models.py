@@ -244,13 +244,38 @@ class PredictionResult(models.Model):
         return ('success', 'Low Risk')
 
     @property
-    def recommendation(self):
-        if self.churn_probability >= 70:
-            return "High Risk! Send aggressive retention campaign (Voucher: COMEBACK30) to prevent churn."
-        elif self.churn_probability >= 40:
-            return "Medium Risk. Offer moderate incentives or upsell features (Voucher: TRYAI15) to encourage re-engagement."
+    def voucher(self):
+        p = self.churn_probability
+
+        if p >= 80:
+            return "SAVE30NOW"
+        elif p >= 60:
+            return "COMEBACK20"
+        elif p >= 40:
+            return "TRYAI15"
+        elif p >= 20:
+            return "EARLYBIRD10"
         else:
-            return "Low Risk (Loyal). Maintain the relationship with exclusive tier offers (Voucher: VIPONLY10)."
+            return "VIPONLY10"
+
+    @property
+    def recommendation(self):
+        p = self.churn_probability
+
+        if p >= 80:
+            return "Assign account manager and provide high-value retention offer."
+
+        elif p >= 60:
+            return "Proactive retention campaign with personalized outreach and targeted incentive."
+
+        elif p >= 40:
+            return "Engagement reinforcement through content, feature education, and mild incentives."
+
+        elif p >= 20:
+            return "Maintain engagement with loyalty benefits, updates, and periodic check-ins."
+
+        else:
+            return "Focus on upsell, referral, and long-term customer value programs."
 
     def __str__(self):
         return f"{self.customer.name} - Churn: {self.churn_probability:.1f}%"

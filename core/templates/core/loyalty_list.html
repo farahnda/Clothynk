@@ -99,18 +99,105 @@
   </div>
 </div>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <form class="d-flex gap-2" method="get">
-    <input type="text" name="q" value="{{ q }}" placeholder="Search by name, email, ID..." class="form-control" style="width:260px; font-size:0.85rem;">
-    <select name="tier" class="form-select" style="width:160px; font-size:0.85rem;">
-      <option value="">All Tiers</option>
-      <option value="bronze" {% if tier == 'bronze' %}selected{% endif %}>Bronze</option>
-      <option value="silver" {% if tier == 'silver' %}selected{% endif %}>Silver</option>
-      <option value="gold"   {% if tier == 'gold'   %}selected{% endif %}>Gold</option>
-      <option value="platinum" {% if tier == 'platinum' %}selected{% endif %}>Platinum</option>
-    </select>
-    <button class="btn btn-accent px-3" type="submit"><i class="bi bi-search"></i></button>
-  </form>
+<div class="card border-0 shadow-sm mb-4" style="border-radius:18px;">
+    <div class="card-body p-4">
+
+        <form method="get">
+
+            <div class="row g-3 align-items-center">
+
+                <!-- Search -->
+                <div class="col-xl-5 col-lg-12">
+                    <input type="text"
+                           name="q"
+                           value="{{ q }}"
+                           class="form-control"
+                           placeholder="Search customer name, email, or ID..."
+                           style="
+                                height:48px;
+                                border-radius:14px;
+                                border:1px solid #e2e8f0;
+                                font-size:.9rem;
+                                box-shadow:none;
+                           ">
+                </div>
+
+                <!-- Tier -->
+                <div class="col-xl-3 col-md-6">
+                    <select name="tier"
+                            class="form-select"
+                            style="
+                                height:48px;
+                                border-radius:14px;
+                                border:1px solid #e2e8f0;
+                                font-size:.9rem;
+                                font-weight:500;
+                                box-shadow:none;
+                                cursor:pointer;
+                            ">
+                        <option value="">Filter by Tier</option>
+                        <option value="bronze" {% if tier == 'bronze' %}selected{% endif %}>Bronze Tier</option>
+                        <option value="silver" {% if tier == 'silver' %}selected{% endif %}>Silver Tier</option>
+                        <option value="gold" {% if tier == 'gold' %}selected{% endif %}>Gold Tier</option>
+                        <option value="platinum" {% if tier == 'platinum' %}selected{% endif %}>Platinum Tier</option>
+                    </select>
+                </div>
+
+                <!-- Sort -->
+                <div class="col-xl-3 col-md-6">
+                    <select name="sort"
+                            class="form-select"
+                            style="
+                                height:48px;
+                                border-radius:14px;
+                                border:1px solid #e2e8f0;
+                                font-size:.9rem;
+                                font-weight:500;
+                                box-shadow:none;
+                                cursor:pointer;
+                            ">
+
+                        <option value="points_desc"
+                            {% if sort == 'points_desc' %}selected{% endif %}>
+                            Highest Points
+                        </option>
+
+                        <option value="points_asc"
+                            {% if sort == 'points_asc' %}selected{% endif %}>
+                            Lowest Points
+                        </option>
+
+                        <option value="spending_desc"
+                            {% if sort == 'spending_desc' %}selected{% endif %}>
+                            Highest Spending
+                        </option>
+
+                        <option value="spending_asc"
+                            {% if sort == 'spending_asc' %}selected{% endif %}>
+                            Lowest Spending
+                        </option>
+
+                    </select>
+                </div>
+
+                <!-- Search Button -->
+                <div class="col-xl-1 col-md-12">
+                    <button type="submit"
+                            class="btn btn-accent w-100 d-flex align-items-center justify-content-center"
+                            style="
+                                height:48px;
+                                border-radius:14px;
+                                min-width:48px;
+                            ">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
 </div>
 
 <div class="card shadow-sm border-0" style="border-radius:12px;">

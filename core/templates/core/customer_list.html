@@ -30,25 +30,93 @@
   }
 </style>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <form class="d-flex gap-2" method="get">
-    <input type="text" name="q" value="{{ q }}" placeholder="Search name, email, ID..." class="form-control" style="width:260px; font-size: 0.85rem;">
-    <select name="tier" class="form-select" style="width:160px; font-size: 0.85rem;">
-      <option value="">All Tiers</option>
-      <option value="bronze" {% if tier == 'bronze' %}selected{% endif %}>Bronze</option>
-      <option value="silver" {% if tier == 'silver' %}selected{% endif %}>Silver</option>
-      <option value="gold"   {% if tier == 'gold'   %}selected{% endif %}>Gold</option>
-      <option value="platinum" {% if tier == 'platinum' %}selected{% endif %}>Platinum</option>
-    </select>
-    <button class="btn btn-accent px-3" type="submit"><i class="bi bi-search"></i></button>
-  </form>
-  <a href="{% url 'customer_add' %}" class="btn btn-accent" style="font-size: 0.85rem;"><i class="bi bi-plus-lg me-1"></i>Add Customer</a>
+<div class="card border-0 shadow-sm mb-4" style="border-radius:18px;">
+    <div class="card-body p-4">
+
+        <div class="row g-3 align-items-center">
+
+            <!-- Filter Form -->
+            <div class="col-lg-10">
+                <form method="get">
+                    <div class="row g-3 align-items-center">
+
+                        <!-- Search -->
+                        <div class="col-xl-8 col-lg-7">
+                            <input type="text"
+                                   name="q"
+                                   value="{{ q }}"
+                                   class="form-control"
+                                   placeholder="Search customer name, email, or ID..."
+                                   style="
+                                        height:48px;
+                                        border-radius:14px;
+                                        border:1px solid #e2e8f0;
+                                        font-size:.9rem;
+                                        box-shadow:none;
+                                   ">
+                        </div>
+
+                        <!-- Tier -->
+                        <div class="col-xl-3 col-lg-4 col-md-6">
+                            <select name="tier"
+                                    class="form-select"
+                                    style="
+                                        height:48px;
+                                        border-radius:14px;
+                                        border:1px solid #e2e8f0;
+                                        font-size:.9rem;
+                                        font-weight:500;
+                                        box-shadow:none;
+                                        cursor:pointer;
+                                    ">
+                                <option value="">Filter by Tier</option>
+                                <option value="bronze" {% if tier == 'bronze' %}selected{% endif %}>Bronze Tier</option>
+                                <option value="silver" {% if tier == 'silver' %}selected{% endif %}>Silver Tier</option>
+                                <option value="gold" {% if tier == 'gold' %}selected{% endif %}>Gold Tier</option>
+                                <option value="platinum" {% if tier == 'platinum' %}selected{% endif %}>Platinum Tier</option>
+                            </select>
+                        </div>
+
+                        <!-- Search Button -->
+                        <div class="col-xl-1 col-lg-1 col-md-6">
+                            <button type="submit"
+                                    class="btn btn-accent w-100 d-flex align-items-center justify-content-center"
+                                    style="
+                                        height:48px;
+                                        border-radius:14px;
+                                        min-width:48px;
+                                    ">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+
+            <!-- Add Customer -->
+            <div class="col-lg-2">
+                <a href="{% url 'customer_add' %}"
+                   class="btn btn-accent w-100 d-flex align-items-center justify-content-center"
+                   style="
+                        height:48px;
+                        border-radius:14px;
+                        font-weight:600;
+                   ">
+                    <i class="bi bi-plus-lg me-2"></i>
+                    Add Customer
+                </a>
+            </div>
+
+        </div>
+
+    </div>
 </div>
 
 <div class="card shadow-sm border-0" style="border-radius:12px;">
   <div class="table-responsive">
     <table class="table align-middle mb-0">
-      <thead class="table-light text-muted" style="font-size:0.75rem; letter-spacing:0.5px; text-transform: uppercase;">
+      <thead class="table-light text-muted align-middle" style="font-size:0.75rem; letter-spacing:0.5px; text-transform: uppercase;">
         <tr>
           <th class="ps-4 py-3">Customer</th>
           <th>Customer ID</th>
