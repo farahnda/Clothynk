@@ -139,7 +139,6 @@
     <table class="table align-middle mb-0">
       <thead class="table-light text-muted align-middle" style="font-size:0.75rem; letter-spacing:0.5px; text-transform: uppercase;">
         <tr>
-          {% comment %} <th class="ps-4 py-3">Customer</th> {% endcomment %}
           <th class="ps-4 py-3">
               <a class="sort-link"
                 data-bs-toggle="tooltip"
@@ -167,7 +166,6 @@
                   {% endif %}
               </a>
           </th>
-          {% comment %} <th>Customer ID</th> {% endcomment %}
           <th>
               <a class="sort-link"
                 data-bs-toggle="tooltip"
@@ -186,7 +184,6 @@
                   {% endif %}
               </a>
           </th>
-          {% comment %} <th>Gender</th> {% endcomment %}
           <th>
               <a class="sort-link"
                 data-bs-toggle="tooltip"
@@ -205,7 +202,6 @@
                   {% endif %}
               </a>
           </th>
-          {% comment %} <th>Location</th> {% endcomment %}
           <th>
               <a class="sort-link"
                 data-bs-toggle="tooltip"
@@ -224,25 +220,7 @@
                   {% endif %}
               </a>
           </th>
-          {% comment %} <th>Purchase Category</th> {% endcomment %}
-          <th>
-              <a class="sort-link"
-                data-bs-toggle="tooltip"
-                title="Sort by purchase category"
-
-                href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'purchase_category' %}-purchase_category{% else %}purchase_category{% endif %}">
-
-                  Purchase Category
-
-                  {% if sort == 'purchase_category' %}
-                      <i class="bi bi-arrow-up sort-icon"></i>
-                  {% elif sort == '-purchase_category' %}
-                      <i class="bi bi-arrow-down sort-icon"></i>
-                  {% else %}
-                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
-                  {% endif %}
-              </a>
-          </th>
+          <!-- Purchase Category telah dihapus dari sini -->
           <th>
               <a class="sort-link"
                 data-bs-toggle="tooltip"
@@ -299,7 +277,7 @@
           <td><span class="mono text-muted" style="font-size:.8rem">{{ c.customer_id }}</span></td>
           <td style="font-size: 0.85rem;">{{ c.gender }}</td>
           <td style="font-size: 0.85rem;">{{ c.location }}</td>
-          <td style="font-size: 0.85rem;">{{ c.purchase_category }}</td>
+          <!-- Kolom isi Purchase Category telah dihapus dari sini -->
           <td style="font-size: 0.85rem;">{{ c.get_purchase_channel_display }}</td>
           <td>
             {% if c.loyalty %}
@@ -317,7 +295,8 @@
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="8" class="text-center text-muted py-5">No customers found.</td></tr>
+        <!-- Mengubah colspan dari 8 menjadi 7 -->
+        <tr><td colspan="7" class="text-center text-muted py-5">No customers found.</td></tr>
         {% endfor %}
       </tbody>
     </table>

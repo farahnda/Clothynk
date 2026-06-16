@@ -3,78 +3,210 @@
 {% block page_title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width:800px">
-  <div class="card-header">{{ title }}</div>
-  <div class="p-4">
-    <form method="post">
-      {% csrf_token %}
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label fw-600">Customer ID</label>{{ form.customer_id }}
-          {% if form.customer_id.errors %}<div class="text-danger" style="font-size:.8rem">{{ form.customer_id.errors }}</div>{% endif %}
-        </div>
-        <div class="col-md-6">
-          <label class="form-label fw-600">Name</label>{{ form.name }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-600">Age</label>{{ form.age }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-600">Gender</label>{{ form.gender }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-600">Income Level</label>{{ form.income_level }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-600">Marital Status</label>{{ form.marital_status }}
-        </div>
-        <div class="col-md-4">
-          <label class="form-label fw-600">Education Level</label>{{ form.education_level }}
-        </div>
-        <div class="col-md-4">
-          <label class="form-label fw-600">Occupation Level</label>{{ form.occupation }}
-        </div>
-        <div class="col-md-4">
-          <label class="form-label fw-600">Location</label>{{ form.location }}
-        </div>
-        <div class="col-md-6">
-          <label class="form-label fw-600">Email</label>{{ form.email }}
-          {% if form.email.errors %}<div class="text-danger" style="font-size:.8rem">{{ form.email.errors }}</div>{% endif %}
-        </div>
-        <div class="col-md-6">
-          <label class="form-label fw-600">Phone Number</label>{{ form.phone }}
-        </div>
-        <div class="col-12"><hr class="my-1"><div class="fw-700 mb-2" style="font-size:.8rem;text-transform:uppercase;letter-spacing:1px;color:#888">Shopping Preferences</div></div>
-        <div class="col-md-6">
-          <label class="form-label fw-600">Purchase Category</label>{{ form.purchase_category }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-600">Channel</label>{{ form.purchase_channel }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-600">Purchase Intent</label>{{ form.purchase_intent }}
-        </div>
-        <div class="col-md-4">
-          <label class="form-label fw-600">Device Used</label>{{ form.device_used }}
-        </div>
-        <div class="col-md-4">
-          <label class="form-label fw-600">Payment Method</label>{{ form.payment_method }}
-        </div>
-        <div class="col-md-4">
-          <label class="form-label fw-600">Shipping Preference</label>{{ form.shipping_preference }}
-        </div>
-        <div class="col-md-6">
-          <label class="form-label fw-600">Social Media Influence</label>{{ form.social_media_influence }}
-        </div>
-        <div class="col-md-6">
-          <label class="form-label fw-600">Discount Sensitivity</label>{{ form.discount_sensitivity }}
-        </div>
+<div class="row g-4">
+  
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+      <div class="card-header bg-white py-3" style="border-top-left-radius: 12px; border-top-right-radius: 12px; border-bottom: 1px solid #f1f5f9;">
+        <h5 class="mb-0 fw-bold text-dark" style="font-size: 1rem;">
+          <i class="bi bi-person-lines-fill me-2" style="color: #2563EB;"></i>{{ title }}
+        </h5>
       </div>
-      <div class="d-flex gap-2 mt-4">
-        <button type="submit" class="btn btn-accent px-4"><i class="bi bi-floppy-fill me-1"></i>Save</button>
-        <a href="{% url 'customer_list' %}" class="btn btn-outline-secondary">Cancel</a>
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+          <div class="row g-2">
+            
+            <div class="col-md-6 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">CUSTOMER ID</label>
+              {{ form.customer_id }}
+              {% if form.customer_id.errors %}
+                <div class="text-danger mt-1" style="font-size:.75rem"><i class="bi bi-exclamation-circle me-1"></i>{{ form.customer_id.errors|striptags }}</div>
+              {% endif %}
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">NAME</label>
+              {{ form.name }}
+            </div>
+            
+            <div class="col-md-3 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">AGE</label>
+              {{ form.age }}
+            </div>
+            <div class="col-md-3 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">GENDER</label>
+              {{ form.gender }}
+            </div>
+            <div class="col-md-3 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">INCOME LEVEL</label>
+              {{ form.income_level }}
+            </div>
+            <div class="col-md-3 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">MARITAL STATUS</label>
+              {{ form.marital_status }}
+            </div>
+            
+            <div class="col-md-4 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">EDUCATION LEVEL</label>
+              {{ form.education_level }}
+            </div>
+            <div class="col-md-4 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">OCCUPATION</label>
+              {{ form.occupation }}
+            </div>
+            <div class="col-md-4 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">LOCATION</label>
+              {{ form.location }}
+            </div>
+            
+            <div class="col-md-6 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">EMAIL ADDRESS</label>
+              {{ form.email }}
+              {% if form.email.errors %}
+                <div class="text-danger mt-1" style="font-size:.75rem"><i class="bi bi-exclamation-circle me-1"></i>{{ form.email.errors|striptags }}</div>
+              {% endif %}
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">PHONE NUMBER</label>
+              {{ form.phone }}
+            </div>
+            
+            <div class="col-12 mt-3 mb-1">
+              <div class="d-flex align-items-center">
+                  <div class="fw-bold" style="font-size:.8rem; text-transform:uppercase; letter-spacing:1px; color:#2563EB;">
+                    <i class="bi bi-bag-check-fill me-2"></i>Shopping Preferences
+                  </div>
+                  <div class="flex-grow-1 ms-3" style="height: 1px; background-color: #e2e8f0;"></div>
+              </div>
+            </div>
+            
+            <div class="col-md-4 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">CHANNEL</label>
+              {{ form.purchase_channel }}
+            </div>
+            <div class="col-md-4 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">PURCHASE INTENT</label>
+              {{ form.purchase_intent }}
+            </div>
+            <div class="col-md-4 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">DEVICE USED</label>
+              <select name="device_used" id="id_device_used" class="form-select">
+                <option value="" {% if not form.device_used.value %}selected{% endif %}>---------</option>
+                <option value="Smartphone" {% if form.device_used.value == 'Smartphone' %}selected{% endif %}>Smartphone</option>
+                <option value="Tablet" {% if form.device_used.value == 'Tablet' %}selected{% endif %}>Tablet</option>
+                <option value="Laptop" {% if form.device_used.value == 'Laptop' %}selected{% endif %}>Laptop</option>
+                <option value="Desktop" {% if form.device_used.value == 'Desktop' %}selected{% endif %}>Desktop</option>
+              </select>
+            </div>
+            
+            <div class="col-md-4 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">PAYMENT METHOD</label>
+              {{ form.payment_method }}
+            </div>
+            <div class="col-md-4 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">SHIPPING PREF</label>
+              {{ form.shipping_preference }}
+            </div>
+            <div class="col-md-4 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">SOCIAL INFLUENCE</label>
+              {{ form.social_media_influence }}
+            </div>
+
+            <div class="col-md-6 mb-2">
+              <label class="form-label text-muted mb-1" style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">DISCOUNT SENSITIVITY</label>
+              {{ form.discount_sensitivity }}
+            </div>
+            
+          </div>
+          
+          <div class="d-flex gap-2 mt-4 pt-3 border-top">
+            <button type="submit" class="btn px-4" style="background-color: #2563EB; color: white; border-radius: 6px; font-weight: 500; font-size: 0.85rem;">
+              <i class="bi bi-floppy-fill me-2"></i>Save
+            </button>
+            <a href="{% url 'customer_list' %}" class="btn btn-outline-secondary px-4" style="border-radius: 6px; font-weight: 500; font-size: 0.85rem;">Cancel</a>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   </div>
+
+<div class="col-lg-4">
+    <div class="card border-0 shadow-sm" style="border-radius: 12px; background-color: #F8FAFC; position: sticky; top: 20px;">
+      <div class="card-body p-4">
+        <h6 class="fw-bold mb-3" style="color: #0F172A; font-size: 0.95rem;"><i class="bi bi-info-circle-fill me-2" style="color: #2563EB;"></i>Field Guidelines</h6>
+        
+        <div style="max-height: 580px; overflow-y: auto; padding-right: 8px;">
+          
+          <h6 class="fw-bold mt-2 mb-2" style="font-size: 0.7rem; letter-spacing: 0.5px; color: #64748b;">PERSONAL INFO</h6>
+
+          <div class="mb-3">
+            <strong style="font-size: 0.75rem; color: #334155;">Income Level</strong>
+            <p class="text-muted mb-0" style="font-size: 0.7rem; line-height: 1.3;">Tingkat pendapatan tahunan: Low, Middle, High.</p>
+          </div>
+
+          <div class="mb-3">
+            <strong style="font-size: 0.75rem; color: #334155;">Marital Status</strong>
+            <p class="text-muted mb-0" style="font-size: 0.7rem; line-height: 1.3;">Status pernikahan: Single, Married, Divorced, atau Widowed.</p>
+          </div>
+
+          <div class="mb-3">
+            <strong style="font-size: 0.75rem; color: #334155;">Education Level</strong>
+            <p class="text-muted mb-0" style="font-size: 0.7rem; line-height: 1.3;">Pendidikan terakhir: High School, Bachelor's, Master's, PhD, Other.</p>
+          </div>
+
+          <div class="mb-3">
+            <strong style="font-size: 0.75rem; color: #334155;">Occupation Level</strong>
+            <p class="text-muted mb-0" style="font-size: 0.7rem; line-height: 1.3;">Level jabatan: Low, Middle, High.</p>
+          </div>
+
+          <h6 class="fw-bold mt-4 mb-2" style="font-size: 0.7rem; letter-spacing: 0.5px; color: #64748b;">SHOPPING PREFERENCES</h6>
+
+          <div class="mb-3">
+            <strong style="font-size: 0.75rem; color: #334155;">Purchase Intent</strong>
+            <p class="text-muted mb-0" style="font-size: 0.7rem; line-height: 1.3;">Motif beli: Need-based, Wants-based, Impulsive.</p>
+          </div>
+
+          <div class="mb-3">
+            <strong style="font-size: 0.75rem; color: #334155;">Shipping Preference</strong>
+            <p class="text-muted mb-0" style="font-size: 0.7rem; line-height: 1.3;">Opsi pengiriman: Standard, Express, No Preference.</p>
+          </div>
+
+          <div class="mb-3">
+            <strong style="font-size: 0.75rem; color: #334155;">Social Media Influence</strong>
+            <p class="text-muted mb-0" style="font-size: 0.7rem; line-height: 1.3;">Pengaruh tren/iklan sosmed: None, Low, Medium, High.</p>
+          </div>
+
+          <div class="mb-1">
+            <strong style="font-size: 0.75rem; color: #334155;">Discount Sensitivity</strong>
+            <p class="text-muted mb-0" style="font-size: 0.7rem; line-height: 1.3;">Respon terhadap promo: Not, Somewhat, atau Highly Sensitive.</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      const inputs = document.querySelectorAll('form input[type="text"], form input[type="email"], form input[type="number"], form select');
+      inputs.forEach(input => {
+          if (!input.classList.contains('form-control') && !input.classList.contains('form-select')) {
+              if (input.tagName === 'SELECT') {
+                  input.classList.add('form-select');
+              } else {
+                  input.classList.add('form-control');
+              }
+          }
+          // Tinggi input dipangkas, padding dirapatkan
+          input.style.minHeight = '34px';
+          input.style.padding = '0.25rem 0.6rem';
+          input.style.borderRadius = '6px';
+          input.style.border = '1px solid #cbd5e1';
+          input.style.fontSize = '0.8rem';
+          input.style.boxShadow = 'none';
+      });
+  });
+</script>
 {% endblock %}

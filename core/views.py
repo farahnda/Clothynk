@@ -251,6 +251,8 @@ def customer_delete(request, pk):
 def transaction_list(request):
     # Tangkap parameter sort dari URL, default ke '-date' (terbaru)
     sort = request.GET.get('sort', '-date')
+    payment_method_query = request.GET.get('payment_method', '')
+    search_query = request.GET.get('q', '')
     
     # Hitung total revenue keseluruhan (lakukan sebelum queryset diubah menjadi list)
     total = Transaction.objects.aggregate(total=Sum('amount'))['total'] or 0
@@ -288,7 +290,8 @@ def transaction_list(request):
         'payment_method', '-payment_method',
         'frequency', '-frequency',
         'satisfaction', '-satisfaction',
-        'discount_used', '-discount_used'
+        'discount_used', '-discount_used',
+        'purchase_category', '-purchase_category',
     ]
     
     # Pisahkan logika sorting

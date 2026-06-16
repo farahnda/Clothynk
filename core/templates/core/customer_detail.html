@@ -12,22 +12,10 @@
       letter-spacing: 0.5px;
       text-transform: uppercase;
   }
-  .tier-bronze { 
-      background-color: rgba(122, 62, 38, 0.15) !important; 
-      color: #7A3E26 !important; 
-  }
-  .tier-silver { 
-      background-color: rgba(138, 146, 154, 0.15) !important; 
-      color: #8A929A !important; 
-  }
-  .tier-gold { 
-      background-color: rgba(196, 132, 37, 0.15) !important; 
-      color: #C48425 !important; 
-  }
-  .tier-platinum { 
-      background-color: rgba(60, 68, 80, 0.15) !important; 
-      color: #3C4450 !important; 
-  }
+  .tier-bronze { background-color: rgba(122, 62, 38, 0.15) !important; color: #7A3E26 !important; }
+  .tier-silver { background-color: rgba(138, 146, 154, 0.15) !important; color: #8A929A !important; }
+  .tier-gold { background-color: rgba(196, 132, 37, 0.15) !important; color: #C48425 !important; }
+  .tier-platinum { background-color: rgba(60, 68, 80, 0.15) !important; color: #3C4450 !important; }
 
   /* Progress bar yang lebih tebal dan elegan */
   .custom-progress {
@@ -42,17 +30,13 @@
   <a href="{% url 'customer_list' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back</a>
   <div class="d-flex gap-2">
     <a href="{% url 'customer_edit' customer.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil me-1"></i>Edit</a>
-    <button
-        class="btn btn-sm btn-outline-danger"
-        data-bs-toggle="modal"
-        data-bs-target="#deleteCustomerModal">
+    <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteCustomerModal">
         <i class="bi bi-trash me-1"></i>Delete
     </button>
   </div>
 </div>
 
 <div class="row g-3">
-  <!-- Profil -->
   <div class="col-md-4">
     <div class="card p-4 shadow-sm border-0" style="border-radius:12px;">
       <div class="text-center mb-3">
@@ -60,7 +44,6 @@
         <h5 class="fw-bold mb-0">{{ customer.name }}</h5>
         <div class="text-muted mb-2" style="font-size:.8rem; font-family: monospace;">{{ customer.customer_id }}</div>
         
-        <!-- Penerapan Soft Badge di Profil -->
         {% if loyalty %}
           <span class="badge rounded-pill tier-badge-custom tier-{{ loyalty.tier }} mt-1">
             <i class="bi bi-award-fill me-1"></i> {{ loyalty.get_tier_display }}
@@ -85,12 +68,10 @@
     </div>
   </div>
 
-  <!-- Preferensi & Loyalty -->
   <div class="col-md-4">
     <div class="card p-4 mb-3 shadow-sm border-0" style="border-radius:12px;">
       <div class="card-header bg-transparent fw-bold px-0 pt-0 border-0">Shopping Preferences</div>
       <div class="d-flex flex-column gap-2 mt-2" style="font-size:.875rem">
-        <div><span class="text-muted">Category:</span> <span class="fw-semibold">{{ customer.purchase_category }}</span></div>
         <div><span class="text-muted">Channel:</span> <span class="fw-semibold">{{ customer.get_purchase_channel_display }}</span></div>
         <div><span class="text-muted">Device:</span> <span class="fw-semibold">{{ customer.device_used }}</span></div>
         <div><span class="text-muted">Payment:</span> <span class="fw-semibold">{{ customer.payment_method }}</span></div>
@@ -106,24 +87,20 @@
       <div class="mt-2">
         <div class="d-flex justify-content-between mb-2" style="font-size:.85rem">
           <span class="fw-bold">{{ loyalty.points }} points</span>
-          <span class="text-muted">Total: <span class="fw-semibold text-dark">${{ loyalty.total_spending|floatformat:2 }}</span></span>
+          <span class="text-muted">Total: <span class="fw-bold text-success">${{ loyalty.total_spending|floatformat:2 }}</span></span>
         </div>
         {% with info=loyalty.get_next_tier_info %}
         {% if info.next_tier %}
-        
-        <!-- Penerapan Progress Bar yang baru -->
         <div class="progress custom-progress mb-2">
             <div class="progress-bar" style="width:{{ info.progress }}%;background:{{ loyalty.get_tier_color }}"></div>
         </div>
-        
         <div class="text-muted d-flex justify-content-between" style="font-size:.75rem">
             <span>${{ info.remaining|floatformat:0 }} remaining</span>
             <span>to {{ info.next_tier|capfirst }}</span>
         </div>
         {% else %}
         <div class="text-muted" style="font-size:.75rem">
-           <i class="bi bi-trophy-fill me-1" style="color:#3C4450;"></i>
-           Max Tier Reached
+           <i class="bi bi-trophy-fill me-1" style="color:#3C4450;"></i> Max Tier Reached
         </div>
         {% endif %}
         {% endwith %}
@@ -132,7 +109,6 @@
     {% endif %}
   </div>
 
-  <!-- Prediksi & Stats -->
   <div class="col-md-4">
     {% if prediction %}
     <div class="card p-4 mb-3 shadow-sm border-0" style="border-radius:12px;">
@@ -163,7 +139,7 @@
       <div class="card-header bg-transparent fw-bold px-0 pt-0 border-0">Transaction Statistics</div>
       <div class="d-flex flex-column gap-2 mt-2" style="font-size:.875rem">
         <div class="d-flex justify-content-between"><span class="text-muted">Total Transactions</span><span class="fw-semibold">{{ freq }}x</span></div>
-        <div class="d-flex justify-content-between"><span class="text-muted">Total Spending</span><span class="fw-semibold text-primary">${{ total_spending|floatformat:2 }}</span></div>
+        <div class="d-flex justify-content-between"><span class="text-muted">Total Spending</span><span class="fw-bold text-success">${{ total_spending|floatformat:2 }}</span></div>
         {% if last_txn %}<div class="d-flex justify-content-between"><span class="text-muted">Last Transaction</span><span class="fw-semibold">{{ last_txn.date|date:"d M Y" }}</span></div>{% endif %}
       </div>
       <a href="{% url 'transaction_add' %}?customer={{ customer.pk }}" class="btn btn-sm btn-accent mt-4 w-100" style="border-radius: 8px;"><i class="bi bi-plus me-1"></i>Add Transaction</a>
@@ -180,6 +156,7 @@
       <thead class="table-light text-muted" style="font-size:0.75rem; letter-spacing:0.5px; text-transform: uppercase;">
           <tr>
               <th class="ps-4">Date</th>
+              <th>Purchase Category</th>
               <th>Amount</th>
               <th>Payment Method</th>
               <th>Discount</th>
@@ -190,6 +167,7 @@
         {% for t in transactions %}
         <tr>
           <td class="ps-4" style="font-size:0.85rem;">{{ t.date|date:"d M Y" }}</td>
+          <td class="text-dark" style="font-size:0.85rem;">{{ t.customer.purchase_category }}</td>
           <td class="fw-bold text-dark" style="font-size:0.85rem;">${{ t.amount|floatformat:2 }}</td>
           <td style="font-size:0.85rem;">{{ t.payment_method }}</td>
           <td>{% if t.discount_used %}<span class="badge bg-success-light text-success px-2 py-1" style="font-size:0.7rem;">Yes</span>{% else %}<span class="text-muted">—</span>{% endif %}</td>
@@ -205,49 +183,21 @@
 <div class="modal fade" id="deleteCustomerModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow" style="border-radius: 16px;">
-
       <div class="modal-body text-center p-5">
-
-        <div class="text-danger mb-3">
-          <i class="bi bi-exclamation-triangle-fill"
-             style="font-size:3.5rem;"></i>
-        </div>
-
-        <h4 class="fw-bold mb-3">
-          Delete "{{ customer.name }}"?
-        </h4>
-
+        <div class="text-danger mb-3"><i class="bi bi-exclamation-triangle-fill" style="font-size:3.5rem;"></i></div>
+        <h4 class="fw-bold mb-3">Delete "{{ customer.name }}"?</h4>
         <p class="text-muted" style="font-size:0.95rem;">
-          All transaction and loyalty data associated with this customer
-          will also be deleted.<br><br>
+          All transaction and loyalty data associated with this customer will also be deleted.<br><br>
           <strong class="text-dark">This action cannot be undone.</strong>
         </p>
-
-        <form method="post"
-              action="{% url 'customer_delete' customer.pk %}">
+        <form method="post" action="{% url 'customer_delete' customer.pk %}">
           {% csrf_token %}
-
           <div class="d-flex justify-content-center gap-3 mt-4">
-
-            <button type="button"
-                    class="btn btn-light px-4 fw-semibold"
-                    style="border-radius: 8px;"
-                    data-bs-dismiss="modal">
-              Cancel
-            </button>
-
-            <button type="submit"
-                    class="btn btn-danger px-4 fw-semibold"
-                    style="border-radius: 8px;">
-              <i class="bi bi-trash-fill me-1"></i>
-              Delete
-            </button>
-
+            <button type="button" class="btn btn-light px-4 fw-semibold" style="border-radius: 8px;" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-danger px-4 fw-semibold" style="border-radius: 8px;"><i class="bi bi-trash-fill me-1"></i>Delete</button>
           </div>
         </form>
-
       </div>
-
     </div>
   </div>
 </div>
