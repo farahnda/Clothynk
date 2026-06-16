@@ -348,7 +348,7 @@
     <h1>{% block page_title %}Dashboard{% endblock %}</h1>
     <div class="user-badge">
       <div class="user-avatar">{{ request.user.username|first|upper }}</div>
-      Superadmin
+      <div class="text-black">{{ request.user.username }}</div>
     </div>
   </div>
 
