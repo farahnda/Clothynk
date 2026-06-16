@@ -7,6 +7,8 @@ from datetime import timedelta
 from django.http import JsonResponse
 import json
 
+from natsort import natsorted
+
 from .models import Customer, Transaction, LoyaltyProfile, Campaign, PredictionResult
 from .forms import CustomerForm, TransactionForm, CampaignForm
 from .ml import run_prediction, run_all_predictions
@@ -114,18 +116,75 @@ def dashboard(request):
         'claim_percentage': claim_percentage,
     }
     return render(request, 'core/dashboard.html', context)
+
 # ─── CUSTOMER ────────────────────────────────────────────────────────────────
 @login_required
 def customer_list(request):
-    q    = request.GET.get('q', '')
+    q = request.GET.get('q', '')
     tier = request.GET.get('tier', '')
-    customers = Customer.objects.all()
-    if q:
-        customers = customers.filter(name__icontains=q) | customers.filter(email__icontains=q) | customers.filter(customer_id__icontains=q)
-    if tier:
-        customers = customers.filter(loyalty__tier=tier)
-    return render(request, 'core/customer_list.html', {'customers': customers, 'q': q, 'tier': tier})
+    sort = request.GET.get('sort', 'name')
 
+    customers = Customer.objects.select_related(
+        'loyalty'
+    )
+
+    # Search
+    if q:
+        customers = customers.filter(
+            Q(name__icontains=q) |
+            Q(email__icontains=q) |
+            Q(customer_id__icontains=q)
+        )
+
+    # Filter tier
+    if tier:
+        customers = customers.filter(
+            loyalty__tier=tier
+        )
+
+    # Allowed sorting
+    allowed_sort = [
+        'name', '-name',
+        'customer_id', '-customer_id',
+        'gender', '-gender',
+        'location', '-location',
+        'purchase_category', '-purchase_category',
+        'purchase_channel', '-purchase_channel',
+        'created_at', '-created_at',
+        'updated_at', '-updated_at',
+        'loyalty__tier', '-loyalty__tier',
+    ]
+
+    # Pisahkan logika sorting
+    if sort in ['name', '-name', 'customer_id', '-customer_id']:
+        # Evaluasi queryset menjadi list untuk menggunakan natsort
+        customers = list(customers)
+        
+        if sort == 'name':
+            customers = natsorted(customers, key=lambda c: c.name)
+        elif sort == '-name':
+            customers = natsorted(customers, key=lambda c: c.name, reverse=True)
+        elif sort == 'customer_id':
+            customers = natsorted(customers, key=lambda c: c.customer_id)
+        elif sort == '-customer_id':
+            customers = natsorted(customers, key=lambda c: c.customer_id, reverse=True)
+    elif sort in allowed_sort:
+        customers = customers.order_by(sort)
+    else:
+        # Default sorting
+        customers = list(customers)
+        customers = natsorted(customers, key=lambda c: c.name)
+
+    return render(
+        request,
+        'core/customer_list.html',
+        {
+            'customers': customers,
+            'q': q,
+            'tier': tier,
+            'sort': sort,
+        }
+    )
 
 @login_required
 def customer_detail(request, pk):
@@ -187,23 +246,56 @@ def customer_delete(request, pk):
         return redirect('customer_list')
 
     return redirect('customer_detail', pk=pk)
-# def customer_delete(request, pk):
-#     customer = get_object_or_404(Customer, pk=pk)
-#     if request.method == 'POST':
-#         name = customer.name
-#         customer.delete()
-#         messages.success(request, f'Customer {name} deleted successfully.')
-#         return redirect('customer_list')
-#     return render(request, 'core/customer_confirm_delete.html', {'customer': customer})
 
-
-# ─── TRANSAKSI ───────────────────────────────────────────────────────────────
 @login_required
 def transaction_list(request):
-    transactions = Transaction.objects.select_related('customer').order_by('-date')[:100]
+    # Tangkap parameter sort dari URL, default ke '-date' (terbaru)
+    sort = request.GET.get('sort', '-date')
+    
+    # Hitung total revenue keseluruhan (lakukan sebelum queryset diubah menjadi list)
     total = Transaction.objects.aggregate(total=Sum('amount'))['total'] or 0
-    return render(request, 'core/transaction_list.html', {'transactions': transactions, 'total': total})
-
+    
+    # Ambil base queryset
+    transactions = Transaction.objects.select_related('customer')
+    
+    # Daftar field yang diizinkan untuk ORM sorting (selain customer name)
+    allowed_sort = [
+        'date', '-date',
+        'amount', '-amount',
+        'payment_method', '-payment_method',
+        'frequency', '-frequency',
+        'satisfaction', '-satisfaction',
+        'discount_used', '-discount_used'
+    ]
+    
+    # Pisahkan logika sorting
+    if sort in ['customer__name', '-customer__name']:
+        # Evaluasi queryset menjadi list untuk menggunakan natsort pada foreign key
+        transactions = list(transactions)
+        
+        if sort == 'customer__name':
+            transactions = natsorted(transactions, key=lambda t: t.customer.name)
+        elif sort == '-customer__name':
+            transactions = natsorted(transactions, key=lambda t: t.customer.name, reverse=True)
+            
+    elif sort in allowed_sort:
+        # Gunakan ORM bawaan untuk field angka/tanggal biasa
+        transactions = transactions.order_by(sort)
+        
+    else:
+        # Default sorting jika tidak valid
+        transactions = transactions.order_by('-date')
+        sort = '-date' # Reset variabel
+        
+    # Batasi ke 100 transaksi setelah di-sort
+    transactions = transactions[:100]
+    
+    context = {
+        'transactions': transactions, 
+        'total': total,
+        'sort': sort
+    }
+    return render(request, 'core/transaction_list.html', context)
 
 @login_required
 def transaction_add(request):
@@ -507,39 +599,3 @@ def revenue_chart_data(request):
         'data': data
     })
 
-# @login_required
-# def revenue_chart_data(request):
-#     period = request.GET.get('period', '6m') # Default 6 bulan
-#     today = timezone.now()
-
-#     # Logika filter waktu
-#     if period == '1m':
-#         start_date = today - timedelta(days=30)
-#         query = Transaction.objects.filter(date__gte=start_date)
-#     elif period == '3m':
-#         start_date = today - timedelta(days=90)
-#         query = Transaction.objects.filter(date__gte=start_date)
-#     if period == '6m':
-#         start_date = today - timedelta(days=180)
-#         query = Transaction.objects.filter(date__gte=start_date)
-#     elif period == '1y':
-#         start_date = today - timedelta(days=365)
-#         query = Transaction.objects.filter(date__gte=start_date)
-#     else: # 'all' / Semua Waktu
-#         query = Transaction.objects.all()
-
-#     # Kelompokkan data berdasarkan tanggal
-#     recent_txn = (
-#         query
-#         .values('date__date')
-#         .annotate(total=Sum('amount'))
-#         .order_by('date__date')
-#     )
-
-#     labels = [str(r['date__date']) for r in recent_txn]
-#     data = [float(r['total']) for r in recent_txn]
-
-#     return JsonResponse({
-#         'labels': labels,
-#         'data': data
-#     })

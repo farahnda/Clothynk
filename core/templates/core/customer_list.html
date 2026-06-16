@@ -1,6 +1,8 @@
 {% extends 'core/base.html' %}
 {% block title %}Customers{% endblock %}
 {% block page_title %}Customer List{% endblock %}
+{% with current_sort=sort %}
+{% endwith %}
 
 {% block content %}
 <style>
@@ -28,6 +30,25 @@
       background-color: rgba(60, 68, 80, 0.15) !important; 
       color: #3C4450 !important; 
   }
+
+  .sort-link {
+      color: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: 0.2s;
+  }
+
+  .sort-link:hover {
+      color: #0d6efd !important;
+  }
+
+  .sort-icon {
+      font-size: 0.75rem;
+  }
+
 </style>
 
 <div class="card border-0 shadow-sm mb-4" style="border-radius:18px;">
@@ -118,13 +139,146 @@
     <table class="table align-middle mb-0">
       <thead class="table-light text-muted align-middle" style="font-size:0.75rem; letter-spacing:0.5px; text-transform: uppercase;">
         <tr>
-          <th class="ps-4 py-3">Customer</th>
-          <th>Customer ID</th>
-          <th>Gender</th>
-          <th>Location</th>
-          <th>Purchase Category</th>
-          <th>Purchase Channel</th>
-          <th>Loyalty</th>
+          {% comment %} <th class="ps-4 py-3">Customer</th> {% endcomment %}
+          <th class="ps-4 py-3">
+              <a class="sort-link"
+                data-bs-toggle="tooltip"
+
+                title="
+                {% if sort == 'name' %}
+                Currently ascending. Click for descending.
+                {% elif sort == '-name' %}
+                Currently descending. Click for ascending.
+                {% else %}
+                Click to sort alphabetically.
+                {% endif %}
+                "
+
+                href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'name' %}-name{% else %}name{% endif %}">
+
+                  Customer
+
+                  {% if sort == 'name' %}
+                      <i class="bi bi-sort-alpha-down sort-icon"></i>
+                  {% elif sort == '-name' %}
+                      <i class="bi bi-sort-alpha-down-alt sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
+          {% comment %} <th>Customer ID</th> {% endcomment %}
+          <th>
+              <a class="sort-link"
+                data-bs-toggle="tooltip"
+                title="Click to sort Customer ID"
+
+                href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'customer_id' %}-customer_id{% else %}customer_id{% endif %}">
+
+                  Customer ID
+
+                  {% if sort == 'customer_id' %}
+                      <i class="bi bi-sort-numeric-down sort-icon"></i>
+                  {% elif sort == '-customer_id' %}
+                      <i class="bi bi-sort-numeric-down-alt sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
+          {% comment %} <th>Gender</th> {% endcomment %}
+          <th>
+              <a class="sort-link"
+                data-bs-toggle="tooltip"
+                title="Sort by gender"
+
+                href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'gender' %}-gender{% else %}gender{% endif %}">
+
+                  Gender
+
+                  {% if sort == 'gender' %}
+                      <i class="bi bi-arrow-up sort-icon"></i>
+                  {% elif sort == '-gender' %}
+                      <i class="bi bi-arrow-down sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
+          {% comment %} <th>Location</th> {% endcomment %}
+          <th>
+              <a class="sort-link"
+                data-bs-toggle="tooltip"
+                title="Sort by location"
+
+                href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'location' %}-location{% else %}location{% endif %}">
+
+                  Location
+
+                  {% if sort == 'location' %}
+                      <i class="bi bi-arrow-up sort-icon"></i>
+                  {% elif sort == '-location' %}
+                      <i class="bi bi-arrow-down sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
+          {% comment %} <th>Purchase Category</th> {% endcomment %}
+          <th>
+              <a class="sort-link"
+                data-bs-toggle="tooltip"
+                title="Sort by purchase category"
+
+                href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'purchase_category' %}-purchase_category{% else %}purchase_category{% endif %}">
+
+                  Purchase Category
+
+                  {% if sort == 'purchase_category' %}
+                      <i class="bi bi-arrow-up sort-icon"></i>
+                  {% elif sort == '-purchase_category' %}
+                      <i class="bi bi-arrow-down sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
+          <th>
+              <a class="sort-link"
+                data-bs-toggle="tooltip"
+                title="Sort by purchase channel"
+
+                href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'purchase_channel' %}-purchase_channel{% else %}purchase_channel{% endif %}">
+
+                  Purchase Channel
+
+                  {% if sort == 'purchase_channel' %}
+                      <i class="bi bi-arrow-up sort-icon"></i>
+                  {% elif sort == '-purchase_channel' %}
+                      <i class="bi bi-arrow-down sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
+          <th>
+              <a class="sort-link"
+                data-bs-toggle="tooltip"
+                title="Sort by loyalty"
+
+                href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'loyalty__tier' %}-loyalty__tier{% else %}loyalty__tier{% endif %}">
+
+                  Loyalty
+
+                  {% if sort == 'loyalty__tier' %}
+                      <i class="bi bi-arrow-up sort-icon"></i>
+                  {% elif sort == '-loyalty__tier' %}
+                      <i class="bi bi-arrow-down sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
           <th></th>
         </tr>
       </thead>

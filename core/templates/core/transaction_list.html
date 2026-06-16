@@ -3,6 +3,28 @@
 {% block page_title %}Transaction List{% endblock %}
 
 {% block content %}
+
+<style>
+  /* Gaya Sort untuk tabel */
+  .sort-link {
+      color: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: 0.2s;
+  }
+
+  .sort-link:hover {
+      color: #0d6efd !important;
+  }
+
+  .sort-icon {
+      font-size: 0.75rem;
+  }
+</style>
+
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div class="stat-card" style="border-radius:12px;padding:14px 20px">
     <div>
@@ -21,13 +43,97 @@
       <thead class="table-light text-muted align-middle"
              style="font-size:0.75rem; letter-spacing:0.5px; text-transform:uppercase;">
         <tr>
-          <th class="ps-4 py-3">Customer</th>
-          <th class="py-3">Date</th>
-          <th class="py-3">Amount</th>
-          <th class="py-3">Payment Method</th>
-          <th class="py-3">Frequency</th>
-          <th class="py-3">Satisfaction</th>
-          <th class="py-3 pe-4">Discount</th>
+          <th class="ps-4 py-3">
+              <a class="sort-link" data-bs-toggle="tooltip" title="Sort by Customer"
+                 href="?sort={% if sort == 'customer__name' %}-customer__name{% else %}customer__name{% endif %}">
+                  Customer
+                  {% if sort == 'customer__name' %}
+                      <i class="bi bi-sort-alpha-down sort-icon"></i>
+                  {% elif sort == '-customer__name' %}
+                      <i class="bi bi-sort-alpha-down-alt sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
+          <th class="py-3">
+              <a class="sort-link" data-bs-toggle="tooltip" title="Sort by Date"
+                 href="?sort={% if sort == 'date' %}-date{% else %}date{% endif %}">
+                  Date
+                  {% if sort == 'date' %}
+                      <i class="bi bi-sort-numeric-down sort-icon"></i>
+                  {% elif sort == '-date' %}
+                      <i class="bi bi-sort-numeric-down-alt sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
+          <th class="py-3">
+              <a class="sort-link" data-bs-toggle="tooltip" title="Sort by Amount"
+                 href="?sort={% if sort == 'amount' %}-amount{% else %}amount{% endif %}">
+                  Amount
+                  {% if sort == 'amount' %}
+                      <i class="bi bi-sort-numeric-down sort-icon"></i>
+                  {% elif sort == '-amount' %}
+                      <i class="bi bi-sort-numeric-down-alt sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
+          <th class="py-3">
+              <a class="sort-link" data-bs-toggle="tooltip" title="Sort by Payment Method"
+                 href="?sort={% if sort == 'payment_method' %}-payment_method{% else %}payment_method{% endif %}">
+                  Payment Method
+                  {% if sort == 'payment_method' %}
+                      <i class="bi bi-sort-alpha-down sort-icon"></i>
+                  {% elif sort == '-payment_method' %}
+                      <i class="bi bi-sort-alpha-down-alt sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
+          <th class="py-3">
+              <a class="sort-link" data-bs-toggle="tooltip" title="Sort by Frequency"
+                 href="?sort={% if sort == 'frequency' %}-frequency{% else %}frequency{% endif %}">
+                  Frequency
+                  {% if sort == 'frequency' %}
+                      <i class="bi bi-sort-numeric-down sort-icon"></i>
+                  {% elif sort == '-frequency' %}
+                      <i class="bi bi-sort-numeric-down-alt sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
+         <th class="py-3">
+              <a class="sort-link" data-bs-toggle="tooltip" title="Sort by Satisfaction"
+                 href="?sort={% if sort == 'satisfaction' %}-satisfaction{% else %}satisfaction{% endif %}">
+                  Satisfaction
+                  {% if sort == 'satisfaction' %}
+                      <i class="bi bi-sort-numeric-down sort-icon"></i>
+                  {% elif sort == '-satisfaction' %}
+                      <i class="bi bi-sort-numeric-down-alt sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
+          <th class="py-3 pe-4">
+              <a class="sort-link" data-bs-toggle="tooltip" title="Sort by Discount"
+                 href="?sort={% if sort == 'discount_used' %}-discount_used{% else %}discount_used{% endif %}">
+                  Discount
+                  {% if sort == 'discount_used' %}
+                      <i class="bi bi-arrow-down sort-icon"></i>
+                  {% elif sort == '-discount_used' %}
+                      <i class="bi bi-arrow-up sort-icon"></i>
+                  {% else %}
+                      <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                  {% endif %}
+              </a>
+          </th>
         </tr>
       </thead>
 

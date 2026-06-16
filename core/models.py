@@ -6,12 +6,12 @@ class Customer(models.Model):
     GENDER_CHOICES = [
         ('Male', 'Male'),
         ('Female', 'Female'),
-        # ('Non-binary', 'Non-binary'),
-        # ('Bigender', 'Bigender'),
-        # ('Genderfluid', 'Genderfluid'),
-        # ('Polygender', 'Polygender'),
-        # ('Agender', 'Agender'),
-        # ('Genderqueer', 'Genderqueer'),
+        ('Non-binary', 'Non-binary'),
+        ('Bigender', 'Bigender'),
+        ('Genderfluid', 'Genderfluid'),
+        ('Polygender', 'Polygender'),
+        ('Agender', 'Agender'),
+        ('Genderqueer', 'Genderqueer'),
     ]
     INCOME_CHOICES = [('Low', 'Low'), ('Middle', 'Middle'), ('High', 'High')]
     MARITAL_CHOICES = [('Single', 'Single'), ('Married', 'Married'), ('Divorced', 'Divorced'), ('Widowed', 'Widowed')]
@@ -60,6 +60,7 @@ class Customer(models.Model):
     purchase_intent        = models.CharField(max_length=20, choices=INTENT_CHOICES, verbose_name='Purchase Intent')
 
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.name} ({self.customer_id})"
