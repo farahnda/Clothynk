@@ -260,7 +260,7 @@ class PredictionResult(models.Model):
 
         # Jika tidak ada campaign yang sedang berjalan, tampilkan teks default
         if not active_campaigns.exists():
-            return "NO-ACTIVE-PROMO"
+            return "-"
 
         p = self.churn_probability
 
