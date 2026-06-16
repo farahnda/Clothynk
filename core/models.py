@@ -202,18 +202,23 @@ class Campaign(models.Model):
     is_active           = models.BooleanField(default=True, verbose_name='Active?')
     created_at          = models.DateTimeField(auto_now_add=True)
 
-
+    @property
     def is_running(self):
-        today = timezone.now().date()
+        if not self.is_active:
+            return False
+        today = timezone.localdate() # Pastikan pakai localdate() di sini juga!
         return self.start_date <= today <= self.end_date
+
     @property
     def is_upcoming(self):
-        today = timezone.now().date()
+        if not self.is_active:
+            return False
+        today = timezone.localdate() # Pastikan pakai localdate()
         return self.start_date > today
 
     @property
     def is_completed(self):
-        today = timezone.now().date()
+        today = timezone.localdate() # Pastikan pakai localdate()
         return self.end_date < today
     
     def get_target_count(self):
@@ -246,7 +251,7 @@ class PredictionResult(models.Model):
     @property
     def voucher(self):
         # 1. Cari semua campaign yang sedang aktif hari ini
-        today = timezone.now().date()
+        today = timezone.localDate()
         active_campaigns = Campaign.objects.filter(
             is_active=True,
             start_date__lte=today,

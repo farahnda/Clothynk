@@ -290,7 +290,7 @@ def transaction_list(request):
         'payment_method', '-payment_method',
         'frequency', '-frequency',
         'satisfaction', '-satisfaction',
-        'discount_used', '-discount_used',
+        'discount_used', '-discount_used'
         'purchase_category', '-purchase_category',
     ]
     
