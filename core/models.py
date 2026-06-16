@@ -229,7 +229,6 @@ class Campaign(models.Model):
         verbose_name = 'Campaign'
         verbose_name_plural = 'Campaign'
 
-
 class PredictionResult(models.Model):
     customer               = models.OneToOneField(Customer, on_delete=models.CASCADE, related_name='prediction')
     churn_probability      = models.FloatField(default=0.0, verbose_name='Churn Probability (%)')
@@ -243,21 +242,52 @@ class PredictionResult(models.Model):
         elif self.churn_probability >= 40:
             return ('warning', 'Medium Risk')
         return ('success', 'Low Risk')
-
+    
     @property
     def voucher(self):
+        # 1. Cari semua campaign yang sedang aktif hari ini
+        today = timezone.now().date()
+        active_campaigns = Campaign.objects.filter(
+            is_active=True,
+            start_date__lte=today,
+            end_date__gte=today
+        ).order_by('-discount_percentage') # Urutkan dari diskon TERBESAR ke TERKECIL
+
+        # Jika tidak ada campaign yang sedang berjalan, tampilkan teks default
+        if not active_campaigns.exists():
+            return "NO-ACTIVE-PROMO"
+
         p = self.churn_probability
 
-        if p >= 80:
-            return "SAVE30NOW"
-        elif p >= 60:
-            return "COMEBACK20"
+        # 2. Sesuaikan voucher dengan tingkat risiko Churn
+        if p >= 70:
+            # Risiko TINGGI -> Dapatkan voucher diskon TERBESAR (urutan pertama)
+            return active_campaigns.first().voucher_code
+            
         elif p >= 40:
-            return "TRYAI15"
-        elif p >= 20:
-            return "EARLYBIRD10"
+            # Risiko MENENGAH -> Dapatkan voucher diskon MENENGAH (di tengah-tengah)
+            # Jika cuma ada 1 campaign, akan otomatis ambil yang itu
+            mid_index = active_campaigns.count() // 2
+            return active_campaigns[mid_index].voucher_code
+            
         else:
-            return "VIPONLY10"
+            # Risiko RENDAH -> Dapatkan voucher diskon TERKECIL (urutan terakhir)
+            return active_campaigns.last().voucher_code
+
+    # @property
+    # def voucher(self):
+    #     p = self.churn_probability
+
+    #     if p >= 80:
+    #         return "SAVE30NOW"
+    #     elif p >= 60:
+    #         return "COMEBACK20"
+    #     elif p >= 40:
+    #         return "TRYAI15"
+    #     elif p >= 20:
+    #         return "EARLYBIRD10"
+    #     else:
+    #         return "VIPONLY10"
 
     @property
     def recommendation(self):
