@@ -218,7 +218,7 @@
                   {% endif %}
               </a>
           </th>
-          <th>
+          {% comment %} <th>
               <a class="sort-link" data-bs-toggle="tooltip" title="Sort by Member Status"
                 href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'is_member' %}-is_member{% else %}is_member{% endif %}">
                   MEMBER
@@ -230,7 +230,7 @@
                       <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
                   {% endif %}
               </a>
-          </th>
+          </th> {% endcomment %}
           <th>PROGRESS</th>
         </tr>
       </thead>
@@ -254,7 +254,7 @@
             </span>
           </td>
           
-         <td>
+         {% comment %} <td>
             {% if l.is_member %}
               <span class="fw-bold text-success" style="font-size: 0.75rem; letter-spacing: 0.5px;">
                 ACTIVE
@@ -262,7 +262,7 @@
             {% else %}
               <span class="text-muted">—</span>
             {% endif %}
-          </td>
+          </td> {% endcomment %}
           <td style="width:180px; padding-right:1.5rem;">
             {% with info=l.get_next_tier_info %}
             {% if info.next_tier %}

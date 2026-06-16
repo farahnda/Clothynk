@@ -311,7 +311,7 @@ def transaction_list(request):
         sort = '-date' # Reset variabel
         
     # Batasi ke 100 transaksi setelah di-sort
-    transactions = transactions[:100]
+    # transactions = transactions[:100]
     
     context = {
         'transactions': transactions, 
@@ -327,12 +327,45 @@ def transaction_add(request):
     if customer_id:
         initial['customer'] = customer_id
     form = TransactionForm(request.POST or None, initial=initial)
-    if form.is_valid():
-        txn = form.save()
-        messages.success(request, f'Transaction ${txn.amount:,.2f} added successfully!')
-        return redirect('transaction_list')
-    return render(request, 'core/transaction_form.html', {'form': form, 'title': 'Add Transaction'})
 
+    if form.is_valid():
+        # 1. Ambil instance dari form, tapi jangan save ke database dulu (commit=False)
+        txn_data = form.save(commit=False)
+        
+        # 2. Tentukan kriteria transaksi yang dianggap "sama"
+        # Contoh di bawah ini menganggap transaksi sama jika customer DAN payment_method sama
+        existing_txn = Transaction.objects.filter(
+            customer=txn_data.customer,
+            payment_method=txn_data.payment_method
+        ).first()
+
+        if existing_txn:
+            # 3a. Jika data sudah ada, tambahkan frequency-nya
+            existing_txn.frequency += 1
+            
+            # (Opsional) Tambahkan amount jika kamu ingin mengakumulasikan total belanja
+            existing_txn.amount += txn_data.amount 
+            
+            # Update data terbaru dari form (misal satisfaction atau discount yang baru)
+            existing_txn.satisfaction = txn_data.satisfaction
+            existing_txn.discount_used = txn_data.discount_used
+            
+            existing_txn.save()
+            messages.success(request, f"Transaction updated! Frequency for {existing_txn.customer.name} increased to {existing_txn.frequency}x.")
+        else:
+            # 3b. Jika data belum ada, set frequency awal ke 1 dan save sebagai baris baru
+            txn_data.frequency = 1
+            txn_data.save()
+            messages.success(request, f"New transaction ${txn_data.amount:,.2f} added successfully!")
+
+        return redirect('transaction_list')
+        
+    return render(request, 'core/transaction_form.html', {'form': form, 'title': 'Add Transaction'})
+    # if form.is_valid():
+    #     txn = form.save()
+    #     messages.success(request, f'Transaction ${txn.amount:,.2f} added successfully!')
+    #     return redirect('transaction_list')
+    # return render(request, 'core/transaction_form.html', {'form': form, 'title': 'Add Transaction'})
 
 # ─── LOYALTY ─────────────────────────────────────────────────────────────────
 @login_required
@@ -423,23 +456,22 @@ def loyalty_list(request):
 # ─── ANALYTICS / PREDIKSI ────────────────────────────────────────────────────
 @login_required
 def analytics(request):
-
+    # 1. Handle POST Request
     if request.method == 'POST':
-        run_all_predictions()
-        messages.success(
-            request,
-            'Prediction successfully run for all customers!'
-        )
+        if 'run_prediction' in request.POST:
+            # Assuming run_all_predictions is defined elsewhere
+            run_all_predictions()
+            messages.success(request, 'Prediction successfully run for all customers!')
+            return redirect('analytics')
 
+    # 2. Get URL Parameters
     q = request.GET.get('q', '')
     risk = request.GET.get('risk', '')
     sort = request.GET.get('sort', '')
 
-    predictions = PredictionResult.objects.select_related(
-        'customer'
-    )
+    predictions = PredictionResult.objects.select_related('customer').all()
 
-    # Search
+    # 3. Search Logic
     if q:
         predictions = predictions.filter(
             Q(customer__name__icontains=q) |
@@ -447,69 +479,157 @@ def analytics(request):
             Q(customer__customer_id__icontains=q)
         )
 
-    # Risk Filter
+    # 4. Risk Filter Logic
     if risk == 'high':
-        predictions = predictions.filter(
-            churn_probability__gte=70
-        )
-
+        predictions = predictions.filter(churn_probability__gte=70)
     elif risk == 'medium':
-        predictions = predictions.filter(
-            churn_probability__gte=40,
-            churn_probability__lt=70
-        )
-
+        predictions = predictions.filter(churn_probability__gte=40, churn_probability__lt=70)
     elif risk == 'low':
-        predictions = predictions.filter(
-            churn_probability__lt=40
-        )
+        predictions = predictions.filter(churn_probability__lt=40)
 
-    # Sorting
-    if sort == 'churn_desc':
-        predictions = predictions.order_by(
-            '-churn_probability'
-        )
+    # 5. Sorting Logic
+    dropdown_mapping = {
+        'churn_desc': '-churn_probability',
+        'churn_asc': 'churn_probability',
+    }
 
-    elif sort == 'churn_asc':
-        predictions = predictions.order_by(
-            'churn_probability'
-        )
+    allowed_header_sort = [
+        'repurchase_probability', '-repurchase_probability',
+        'churn_probability', '-churn_probability',
+        'predicted_at', '-predicted_at',
+    ]
 
+    # Handle Dropdown Menu Sorting
+    if sort in dropdown_mapping:
+        predictions = predictions.order_by(dropdown_mapping[sort])
+        
+    # Handle Table Header Sorting (ORM)
+    elif sort in allowed_header_sort:
+        predictions = predictions.order_by(sort)
+        
+    # Handle Natural Sorting for Customer Name (Like customer_list)
+    elif sort in ['customer__name', '-customer__name']:
+        predictions = list(predictions)
+        if sort == 'customer__name':
+            predictions = natsorted(predictions, key=lambda p: p.customer.name)
+        else:
+            predictions = natsorted(predictions, key=lambda p: p.customer.name, reverse=True)
+            
+    # Default Sorting Fallback
     else:
-        predictions = predictions.order_by(
-            '-predicted_at'
-        )
+        # If no sort is provided, or an invalid one is given, default to Highest Churn
+        predictions = predictions.order_by('-churn_probability')
+        sort = 'churn_desc' # Set fallback so the dropdown UI matches the default state
 
-    high_risk = PredictionResult.objects.filter(
-        churn_probability__gte=70
-    )
-
-    medium_risk = PredictionResult.objects.filter(
-        churn_probability__gte=40,
-        churn_probability__lt=70
-    )
-
-    low_risk = PredictionResult.objects.filter(
-        churn_probability__lt=40
-    )
+    # 6. Data for Stat Cards (Calculated from base objects so they aren't affected by search/sort lists)
+    total_predicted = PredictionResult.objects.count()
+    high_risk = PredictionResult.objects.filter(churn_probability__gte=70)
+    medium_risk = PredictionResult.objects.filter(churn_probability__gte=40, churn_probability__lt=70)
+    low_risk = PredictionResult.objects.filter(churn_probability__lt=40)
 
     context = {
         'predictions': predictions,
+        'total_predicted': total_predicted,
         'high_risk': high_risk,
         'medium_risk': medium_risk,
         'low_risk': low_risk,
-        'total_predicted': PredictionResult.objects.count(),
-
         'q': q,
         'risk': risk,
         'sort': sort,
     }
 
-    return render(
-        request,
-        'core/analytics.html',
-        context
-    )
+    return render(request, 'core/analytics.html', context)
+
+# def analytics(request):
+
+#     if request.method == 'POST':
+#         run_all_predictions()
+#         messages.success(
+#             request,
+#             'Prediction successfully run for all customers!'
+#         )
+
+#     q = request.GET.get('q', '')
+#     risk = request.GET.get('risk', '')
+#     sort = request.GET.get('sort', '')
+
+#     predictions = PredictionResult.objects.select_related(
+#         'customer'
+#     )
+
+#     # Search
+#     if q:
+#         predictions = predictions.filter(
+#             Q(customer__name__icontains=q) |
+#             Q(customer__email__icontains=q) |
+#             Q(customer__customer_id__icontains=q)
+#         )
+
+#     # Risk Filter
+#     if risk == 'high':
+#         predictions = predictions.filter(
+#             churn_probability__gte=70
+#         )
+
+#     elif risk == 'medium':
+#         predictions = predictions.filter(
+#             churn_probability__gte=40,
+#             churn_probability__lt=70
+#         )
+
+#     elif risk == 'low':
+#         predictions = predictions.filter(
+#             churn_probability__lt=40
+#         )
+
+#     # Sorting
+#     if sort == 'churn_desc':
+#         predictions = predictions.order_by(
+#             '-churn_probability'
+#         )
+
+#     elif sort == 'churn_asc':
+#         predictions = predictions.order_by(
+#             'churn_probability'
+#         )
+
+#     else:
+#         predictions = predictions.order_by(
+#             '-predicted_at'
+#         )
+
+#     high_risk = PredictionResult.objects.filter(
+#         churn_probability__gte=70
+#     )
+
+#     medium_risk = PredictionResult.objects.filter(
+#         churn_probability__gte=40,
+#         churn_probability__lt=70
+#     )
+
+#     low_risk = PredictionResult.objects.filter(
+#         churn_probability__lt=40
+#     )
+
+#     context = {
+#         'predictions': predictions,
+#         'high_risk': high_risk,
+#         'medium_risk': medium_risk,
+#         'low_risk': low_risk,
+#         'total_predicted': PredictionResult.objects.count(),
+
+#         'q': q,
+#         'risk': risk,
+#         'sort': sort,
+#     }
+
+#     return render(
+#         request,
+#         'core/analytics.html',
+#         context
+#     )
+
+
 
 @login_required
 def predict_single(request, pk):
@@ -649,4 +769,3 @@ def revenue_chart_data(request):
         'labels': labels,
         'data': data
     })
-

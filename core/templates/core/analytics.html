@@ -4,6 +4,27 @@
 {% block page_title %}Predictive Analytics{% endblock %}
 
 {% block content %}
+
+<style>
+    .sort-link {
+      color: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: 0.2s;
+  }
+
+  .sort-link:hover {
+      color: #0d6efd !important; /* Disesuaikan dengan tema ungu di halaman ini */
+  }
+
+  .sort-icon {
+      font-size: 0.75rem;
+  }
+</style>
+
 <div class="card mb-4 border-0 shadow-sm" style="border-left:4px solid #6C63FF; background:linear-gradient(135deg,#F8F9FF,#fff);">
     <div class="card-body">
         <div class="d-flex align-items-center gap-3">
@@ -155,16 +176,20 @@
 
     <div class="table-responsive">
         <table class="table align-middle mb-0">
-
             <thead class="align-middle">
                 <tr style="background:#f8fafc;">
-                    <th class="ps-4"
-                        style="
-                        font-size:.75rem;
-                        font-weight:700;
-                        color:#64748b;
-                        border-color:#e2e8f0;">
-                        Customer
+                    <th class="ps-4" style="font-size:.75rem; font-weight:700; color:#64748b; border-color:#e2e8f0;">
+                        <a class="sort-link" data-bs-toggle="tooltip" title="Sort by Customer"
+                        href="?q={{ q }}&risk={{ risk }}&sort={% if sort == 'customer__name' %}-customer__name{% else %}customer__name{% endif %}">
+                            Customer
+                            {% if sort == 'customer__name' %}
+                                <i class="bi bi-sort-alpha-down sort-icon"></i>
+                            {% elif sort == '-customer__name' %}
+                                <i class="bi bi-sort-alpha-down-alt sort-icon"></i>
+                            {% else %}
+                                <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                            {% endif %}
+                        </a>
                     </th>
 
                     <th class="text-center"
@@ -176,31 +201,46 @@
                         Status
                     </th>
 
-                    <th class="text-center"
-                        style="
-                        font-size:.75rem;
-                        font-weight:700;
-                        color:#64748b;
-                        border-color:#e2e8f0;">
-                        Repurchase Prob.
+                    <th class="text-center" style="font-size:.75rem; font-weight:700; color:#64748b; border-color:#e2e8f0;">
+                        <a class="sort-link justify-content-center" data-bs-toggle="tooltip" title="Sort by Repurchase Probability"
+                        href="?q={{ q }}&risk={{ risk }}&sort={% if sort == 'repurchase_probability' %}-repurchase_probability{% else %}repurchase_probability{% endif %}">
+                            Repurchase Prob.
+                            {% if sort == 'repurchase_probability' %}
+                                <i class="bi bi-sort-numeric-down sort-icon"></i>
+                            {% elif sort == '-repurchase_probability' %}
+                                <i class="bi bi-sort-numeric-down-alt sort-icon"></i>
+                            {% else %}
+                                <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                            {% endif %}
+                        </a>
                     </th>
 
-                    <th class="text-center"
-                        style="
-                        font-size:.75rem;
-                        font-weight:700;
-                        color:#64748b;
-                        border-color:#e2e8f0;">
-                        Churn Prob.
+                    <th class="text-center" style="font-size:.75rem; font-weight:700; color:#64748b; border-color:#e2e8f0;">
+                        <a class="sort-link justify-content-center" data-bs-toggle="tooltip" title="Sort by Churn Probability"
+                        href="?q={{ q }}&risk={{ risk }}&sort={% if sort == 'churn_probability' %}-churn_probability{% else %}churn_probability{% endif %}">
+                            Churn Prob.
+                            {% if sort == 'churn_probability' %}
+                                <i class="bi bi-sort-numeric-down sort-icon"></i>
+                            {% elif sort == '-churn_probability' %}
+                                <i class="bi bi-sort-numeric-down-alt sort-icon"></i>
+                            {% else %}
+                                <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                            {% endif %}
+                        </a>
                     </th>
 
-                    <th class="text-center"
-                        style="
-                        font-size:.75rem;
-                        font-weight:700;
-                        color:#64748b;
-                        border-color:#e2e8f0;">
-                        Prediction Time
+                    <th class="text-center" style="font-size:.75rem; font-weight:700; color:#64748b; border-color:#e2e8f0;">
+                        <a class="sort-link justify-content-center" data-bs-toggle="tooltip" title="Sort by Prediction Time"
+                        href="?q={{ q }}&risk={{ risk }}&sort={% if sort == 'predicted_at' %}-predicted_at{% else %}predicted_at{% endif %}">
+                            Prediction Time
+                            {% if sort == 'predicted_at' %}
+                                <i class="bi bi-sort-numeric-down sort-icon"></i>
+                            {% elif sort == '-predicted_at' %}
+                                <i class="bi bi-sort-numeric-down-alt sort-icon"></i>
+                            {% else %}
+                                <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
+                            {% endif %}
+                        </a>
                     </th>
 
                     <th 
