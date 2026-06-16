@@ -7,14 +7,12 @@
   /* Menyesuaikan ukuran badge agar pas di dalam tabel */
   .tier-badge-custom {
       font-size: 0.7rem;
-      font-weight: 700; /* Font ditebalkan sedikit agar teks berwarna lebih terbaca */
+      font-weight: 700; 
       padding: 0.4em 0.8em;
       letter-spacing: 0.5px;
       text-transform: uppercase;
-      /* Efek shadow dihapus karena desain 'soft badge' lebih bagus terlihat flat/datar */
   }
   
-  /* OPSI KEDUA: Background pudar (rgba) dengan teks berwarna solid */
   .tier-bronze { 
       background-color: rgba(122, 62, 38, 0.15) !important; 
       color: #7A3E26 !important; 
@@ -32,7 +30,7 @@
       color: #3C4450 !important; 
   }
 
-  /* Membuat progress bar lebih tebal dan berjarak */
+  /* Progress bar kustom */
   .custom-progress {
       height: 6px;
       border-radius: 10px;
@@ -40,7 +38,7 @@
       margin-bottom: 6px;
   }
   
-  /* Membuat ikon di kotak atas lebih nge-blend */
+  /* Ikon stat card */
   .stat-icon-custom {
       width: 42px;
       height: 42px;
@@ -49,6 +47,17 @@
       align-items: center;
       justify-content: center;
       font-size: 1.25rem;
+  }
+
+  /* Badge Active Kustom yang lebih profesional (menggunakan hijau standar Bootstrap) */
+  .badge-active-soft {
+      background-color: rgba(25, 135, 84, 0.15); /* Hijau transparan */
+      color: #198754; /* Hijau Bootstrap (text-success) */
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.4em 0.8em;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
   }
 </style>
 
@@ -101,40 +110,13 @@
 
 <div class="card border-0 shadow-sm mb-4" style="border-radius:18px;">
     <div class="card-body p-4">
-
         <form method="get">
-
             <div class="row g-3 align-items-center">
-
-                <!-- Search -->
                 <div class="col-xl-5 col-lg-12">
-                    <input type="text"
-                           name="q"
-                           value="{{ q }}"
-                           class="form-control"
-                           placeholder="Search customer name, email, or ID..."
-                           style="
-                                height:48px;
-                                border-radius:14px;
-                                border:1px solid #e2e8f0;
-                                font-size:.9rem;
-                                box-shadow:none;
-                           ">
+                    <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search customer name, email, or ID..." style="height:48px; border-radius:14px; border:1px solid #e2e8f0; font-size:.9rem; box-shadow:none;">
                 </div>
-
-                <!-- Tier -->
                 <div class="col-xl-3 col-md-6">
-                    <select name="tier"
-                            class="form-select"
-                            style="
-                                height:48px;
-                                border-radius:14px;
-                                border:1px solid #e2e8f0;
-                                font-size:.9rem;
-                                font-weight:500;
-                                box-shadow:none;
-                                cursor:pointer;
-                            ">
+                    <select name="tier" class="form-select" style="height:48px; border-radius:14px; border:1px solid #e2e8f0; font-size:.9rem; font-weight:500; box-shadow:none; cursor:pointer;">
                         <option value="">Filter by Tier</option>
                         <option value="bronze" {% if tier == 'bronze' %}selected{% endif %}>Bronze Tier</option>
                         <option value="silver" {% if tier == 'silver' %}selected{% endif %}>Silver Tier</option>
@@ -142,61 +124,21 @@
                         <option value="platinum" {% if tier == 'platinum' %}selected{% endif %}>Platinum Tier</option>
                     </select>
                 </div>
-
-                <!-- Sort -->
                 <div class="col-xl-3 col-md-6">
-                    <select name="sort"
-                            class="form-select"
-                            style="
-                                height:48px;
-                                border-radius:14px;
-                                border:1px solid #e2e8f0;
-                                font-size:.9rem;
-                                font-weight:500;
-                                box-shadow:none;
-                                cursor:pointer;
-                            ">
-
-                        <option value="points_desc"
-                            {% if sort == 'points_desc' %}selected{% endif %}>
-                            Highest Points
-                        </option>
-
-                        <option value="points_asc"
-                            {% if sort == 'points_asc' %}selected{% endif %}>
-                            Lowest Points
-                        </option>
-
-                        <option value="spending_desc"
-                            {% if sort == 'spending_desc' %}selected{% endif %}>
-                            Highest Spending
-                        </option>
-
-                        <option value="spending_asc"
-                            {% if sort == 'spending_asc' %}selected{% endif %}>
-                            Lowest Spending
-                        </option>
-
+                    <select name="sort" class="form-select" style="height:48px; border-radius:14px; border:1px solid #e2e8f0; font-size:.9rem; font-weight:500; box-shadow:none; cursor:pointer;">
+                        <option value="points_desc" {% if sort == 'points_desc' %}selected{% endif %}>Highest Points</option>
+                        <option value="points_asc" {% if sort == 'points_asc' %}selected{% endif %}>Lowest Points</option>
+                        <option value="spending_desc" {% if sort == 'spending_desc' %}selected{% endif %}>Highest Spending</option>
+                        <option value="spending_asc" {% if sort == 'spending_asc' %}selected{% endif %}>Lowest Spending</option>
                     </select>
                 </div>
-
-                <!-- Search Button -->
                 <div class="col-xl-1 col-md-12">
-                    <button type="submit"
-                            class="btn btn-accent w-100 d-flex align-items-center justify-content-center"
-                            style="
-                                height:48px;
-                                border-radius:14px;
-                                min-width:48px;
-                            ">
+                    <button type="submit" class="btn btn-accent w-100 d-flex align-items-center justify-content-center" style="height:48px; border-radius:14px; min-width:48px;">
                         <i class="bi bi-search"></i>
                     </button>
                 </div>
-
             </div>
-
         </form>
-
     </div>
 </div>
 
@@ -226,10 +168,18 @@
             </span>
           </td>
           <td class="fw-bold text-dark" style="font-size:0.9rem;">{{ l.points }}</td>
-          <td class="fw-bold" style="color:#6C63FF; font-size:0.9rem;">${{ l.total_spending|floatformat:2 }}</td>
+          
           <td>
+            <span class="fw-bold text-success" style="font-size:0.9rem;">
+              ${{ l.total_spending|floatformat:2 }}
+            </span>
+          </td>
+          
+         <td>
             {% if l.is_member %}
-              <span class="badge bg-success-light text-success px-2 py-1" style="font-size:0.7rem;">Active</span>
+              <span class="fw-bold text-success" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                ACTIVE
+              </span>
             {% else %}
               <span class="text-muted">—</span>
             {% endif %}
