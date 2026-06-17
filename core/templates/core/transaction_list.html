@@ -25,53 +25,154 @@
   }
 </style>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <div class="stat-card" style="border-radius:12px;padding:14px 20px">
-    <div>
-      <div class="stat-label">Total Revenue</div>
-      <div class="stat-value" style="font-size:1.2rem">${{ total|floatformat:2 }}</div>
-    </div>
-  </div>
-  
-  <div class="d-flex gap-2">
-      <button type="button" class="btn btn-outline-primary px-3 d-flex align-items-center"
-              style="border-radius: 8px; font-weight: 500;"
-              data-bs-toggle="modal" data-bs-target="#importTransactionModal">
-          <i class="bi bi-cloud-arrow-up me-2"></i> Import CSV
-      </button>
-      <a href="{% url 'transaction_add' %}" class="btn btn-accent px-3 d-flex align-items-center" style="border-radius: 8px; font-weight: 500;">
-          <i class="bi bi-plus-lg me-2"></i>Add Transaction
-      </a>
-  </div>
-</div>
-
 <div class="card border-0 shadow-sm mb-4" style="border-radius:18px;">
     <div class="card-body p-4">
+
+        <!-- TOP -->
+        <div class="row align-items-center mb-4">
+
+            <!-- Revenue -->
+            <div class="col-lg-7">
+                <div class="d-flex align-items-center">
+
+                    <div class="d-flex align-items-center justify-content-center me-3"
+                         style="
+                            width:58px;
+                            height:58px;
+                            border-radius:16px;
+                            background:#FEF3C7;">
+
+                        <i class="bi bi-cash-stack"
+                           style="font-size:1.45rem;color:#D97706;"></i>
+
+                    </div>
+
+                    <div>
+                        <div style="
+                            font-size:.72rem;
+                            color:#94a3b8;
+                            font-weight:700;
+                            letter-spacing:.4px;">
+                            TOTAL REVENUE
+                        </div>
+
+                        <div class="fw-bold"
+                             style="font-size:1.65rem;color:#0f172a;">
+                            ${{ total|floatformat:2 }}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="col-lg-5">
+                <div class="row g-2 mt-3 mt-lg-0 justify-content-lg-end">
+
+                    <div class="col-6 col-lg-auto d-grid">
+                        <button type="button"
+                                class="btn btn-outline-primary d-flex align-items-center justify-content-center w-100"
+                                style="height:48px;border-radius:14px;font-weight:600;"
+                                data-bs-toggle="modal"
+                                data-bs-target="#importTransactionModal">
+
+                            <i class="bi bi-cloud-upload me-2"></i>
+                            Import CSV
+
+                        </button>
+                    </div>
+
+                    <div class="col-6 col-lg-auto d-grid">
+                        <a href="{% url 'transaction_add' %}"
+                        class="btn btn-accent d-flex align-items-center justify-content-center w-100"
+                        style="height:48px;border-radius:14px;font-weight:600;">
+
+                            <i class="bi bi-plus-lg me-2"></i>
+                            Add Transaction
+
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SEARCH -->
         <form method="get">
+
             <div class="row g-3 align-items-center">
-                
+
                 <div class="col-xl-8 col-lg-7">
-                    <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search transactions..." style="height:48px; border-radius:14px; border:1px solid #e2e8f0; font-size:.9rem; box-shadow:none;">
+                    <input
+                        type="text"
+                        name="q"
+                        value="{{ q }}"
+                        class="form-control"
+                        placeholder="Search transactions..."
+                        style="
+                            height:48px;
+                            border-radius:14px;
+                            border:1px solid #e2e8f0;
+                            font-size:.9rem;
+                            box-shadow:none;">
                 </div>
 
-                <div class="col-xl-3 col-lg-4 col-md-6">
-                    <select name="payment_method" class="form-select" style="height:48px; border-radius:14px; border:1px solid #e2e8f0; font-size:.9rem; font-weight:500; box-shadow:none; cursor:pointer;">
+                <div class="col-xl-3 col-lg-4">
+                    <select
+                        name="payment_method"
+                        class="form-select"
+                        style="
+                            height:48px;
+                            border-radius:14px;
+                            border:1px solid #e2e8f0;
+                            font-size:.9rem;
+                            font-weight:500;
+                            box-shadow:none;
+                            cursor:pointer;">
+
                         <option value="">Filter by Payment Method</option>
-                        <option value="Credit Card" {% if payment_method == 'Credit Card' %}selected{% endif %}>Credit Card</option>
-                        <option value="Debit Card" {% if payment_method == 'Debit Card' %}selected{% endif %}>Debit Card</option>
-                        <option value="PayPal" {% if payment_method == 'PayPal' %}selected{% endif %}>PayPal</option>
-                        <option value="Cash" {% if payment_method == 'Cash' %}selected{% endif %}>Cash</option>
+
+                        <option value="Credit Card"
+                            {% if payment_method == 'Credit Card' %}selected{% endif %}>
+                            Credit Card
+                        </option>
+
+                        <option value="Debit Card"
+                            {% if payment_method == 'Debit Card' %}selected{% endif %}>
+                            Debit Card
+                        </option>
+
+                        <option value="PayPal"
+                            {% if payment_method == 'PayPal' %}selected{% endif %}>
+                            PayPal
+                        </option>
+
+                        <option value="Cash"
+                            {% if payment_method == 'Cash' %}selected{% endif %}>
+                            Cash
+                        </option>
+
                     </select>
                 </div>
 
-                <div class="col-xl-1 col-lg-1 col-md-6">
-                    <button type="submit" class="btn btn-accent w-100 d-flex align-items-center justify-content-center" style="height:48px; border-radius:14px; min-width:48px;">
+                <div class="col-xl-1 col-lg-1">
+                    <button
+                        type="submit"
+                        class="btn btn-accent w-100 d-flex align-items-center justify-content-center"
+                        style="
+                            height:48px;
+                            border-radius:14px;">
+
                         <i class="bi bi-search"></i>
+
                     </button>
                 </div>
 
             </div>
+
         </form>
+
     </div>
 </div>
 

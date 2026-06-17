@@ -16,10 +16,13 @@ urlpatterns = [
     path('customer/<int:pk>/predict/', views.predict_single, name='predict_single'),
 
     # Transaksi
-   path('transaction/', views.transaction_list, name='transaction_list'),
+    path('transaction/', views.transaction_list, name='transaction_list'),
     path('transaction/add/', views.transaction_add, name='transaction_add'),
     path('transaction/import/', views.import_transaction_csv, name='transaction_import'), 
     path('transaction/import/template/', views.download_transaction_template, name='download_transaction_template'), 
+
+    # AJAX
+    path('ajax/customer-loyalty/<int:pk>/', views.get_customer_loyalty, name='customer_loyalty'),
 
     # Loyalty
     path('loyalty/', views.loyalty_list, name='loyalty_list'),
