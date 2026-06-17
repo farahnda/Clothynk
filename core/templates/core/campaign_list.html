@@ -35,7 +35,7 @@
                 
                 <div class="d-flex flex-wrap gap-3 mb-4">
                     <span class="text-muted" style="font-size:0.75rem;"><i class="bi bi-bullseye me-1"></i>Target: {{ campaign.get_target_tier_display }}</span>
-                    <span class="text-muted" style="font-size:0.75rem;"><i class="bi bi-tag me-1"></i>Diskon {{ campaign.discount_percentage }}%</span>
+                    <span class="text-muted" style="font-size:0.75rem;"><i class="bi bi-tag me-1"></i>Discount: {{ campaign.discount_percentage }}%</span>
                     {% if campaign.voucher_code %}
                     <!-- PERUBAHAN: Voucher Code dikembalikan ke warna abu-abu netral -->
                     <span class="badge mono" style="background:#F1F5F9; color:#334155; font-size:0.75rem; font-weight: 700; border: 1px dashed #CBD5E1;">
@@ -46,7 +46,7 @@
 
                 <div class="mb-4">
                     <div class="d-flex justify-content-between mb-1">
-                        <span style="font-size: 0.75rem; color: #6B7280;">Progress Klaim</span>
+                        <span style="font-size: 0.75rem; color: #6B7280;">Claim Progress</span>
                         <span style="font-size: 0.75rem; font-weight: 600; color: #2563EB;">
                             {{ campaign.claimed_count }} / {{ campaign.get_target_count }} Claimed
                         </span>

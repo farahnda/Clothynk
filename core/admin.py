@@ -4,14 +4,14 @@ from .models import Customer, Transaction, LoyaltyProfile, Campaign, PredictionR
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ['name', 'customer_id', 'gender', 'location', 'purchase_category', 'created_at']
+    list_display = ['name', 'customer_id', 'gender', 'location', 'created_at']
     search_fields = ['name', 'email', 'customer_id']
     list_filter = ['gender', 'income_level', 'purchase_channel']
 
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ['customer', 'amount', 'date', 'payment_method', 'discount_used']
+    list_display = ['customer', 'amount', 'date', 'payment_method', 'purchase_category', 'discount_used']
     list_filter = ['payment_method', 'discount_used']
     search_fields = ['customer__name']
 

@@ -290,7 +290,7 @@ def transaction_list(request):
         'payment_method', '-payment_method',
         'frequency', '-frequency',
         'satisfaction', '-satisfaction',
-        'discount_used', '-discount_used'
+        'discount_used', '-discount_used',
         'purchase_category', '-purchase_category',
     ]
     
@@ -338,8 +338,7 @@ def transaction_add(request):
         # 2. Tentukan kriteria transaksi yang dianggap "sama"
         # Contoh di bawah ini menganggap transaksi sama jika customer DAN payment_method sama
         existing_txn = Transaction.objects.filter(
-            customer=txn_data.customer,
-            payment_method=txn_data.payment_method
+            customer=txn_data.customer
         ).first()
 
         if existing_txn:
@@ -772,3 +771,73 @@ def revenue_chart_data(request):
         'labels': labels,
         'data': data
     })
+
+
+@login_required
+def get_customer_loyalty(request, pk):
+    customer = get_object_or_404(Customer, pk=pk)
+    loyalty = customer.get_loyalty()
+
+    if not loyalty:
+        return JsonResponse({'error': 'No loyalty data'}, status=404)
+
+    campaigns = Campaign.objects.filter(
+        is_active=True,
+        start_date__lte=timezone.localdate(),
+        end_date__gte=timezone.localdate()
+    )
+
+    # filter campaign sesuai tier
+    matched_campaigns = []
+    for c in campaigns:
+        if c.target_tier == 'all' or c.target_tier == loyalty.tier:
+            matched_campaigns.append({
+                'name': c.name,
+                'discount': float(c.discount_percentage),
+                'voucher': c.voucher_code,
+            })
+
+    return JsonResponse({
+        'tier': loyalty.tier,
+        'color': loyalty.get_tier_color(),
+        'points': loyalty.points,
+        'total_spending': float(loyalty.total_spending),
+        'campaigns': matched_campaigns
+    })
+
+from django.http import JsonResponse
+from django.utils import timezone
+from .models import Campaign, LoyaltyProfile
+
+@login_required
+def get_available_campaigns(request, customer_id):
+    today = timezone.localdate()
+
+    try:
+        loyalty = LoyaltyProfile.objects.get(customer_id=customer_id)
+        tier = loyalty.tier
+    except LoyaltyProfile.DoesNotExist:
+        tier = None
+
+    campaigns = Campaign.objects.filter(
+        is_active=True,
+        start_date__lte=today,
+        end_date__gte=today
+    )
+
+    if tier:
+        campaigns = campaigns.filter(
+            Q(target_tier=tier) | Q(target_tier='all')
+        )
+
+    data = []
+    for c in campaigns:
+        data.append({
+            "id": c.id,
+            "name": c.name,
+            "discount": float(c.discount_percentage),
+            "voucher": c.voucher_code,
+            "tier": c.target_tier
+        })
+
+    return JsonResponse({"campaigns": data})

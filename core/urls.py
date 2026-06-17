@@ -16,6 +16,8 @@ urlpatterns = [
     # Transaksi
     path('transaction/', views.transaction_list, name='transaction_list'),
     path('transaction/add/', views.transaction_add, name='transaction_add'),
+    path('ajax/customer-loyalty/<int:pk>/', views.get_customer_loyalty, name='customer_loyalty'),
+    path('api/campaigns/<int:customer_id>/', views.get_available_campaigns, name='get_campaigns'),
 
     # Loyalty
     path('loyalty/', views.loyalty_list, name='loyalty_list'),

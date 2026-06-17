@@ -50,7 +50,6 @@ class Customer(models.Model):
     phone           = models.CharField(max_length=20, blank=True, verbose_name='Phone Number')
 
     # Preferensi Belanja
-    purchase_category      = models.CharField(max_length=100, verbose_name='Purchase Category')
     purchase_channel       = models.CharField(max_length=30, choices=CHANNEL_CHOICES, verbose_name='Purchase Channel')
     social_media_influence = models.CharField(max_length=20, choices=INFLUENCE_CHOICES, verbose_name='Social Media Influence')
     discount_sensitivity   = models.CharField(max_length=30, choices=SENSITIVITY_CHOICES, verbose_name='Discount Sensitivity')
@@ -85,6 +84,33 @@ class Transaction(models.Model):
         ('Cash', 'Cash'),
         ('Other', 'Other'),
     ]
+    PURCHASE_CATEGORY_CHOICES = [
+        ('Activewear', 'Activewear'),
+        ('Baju Cosplay', 'Baju Cosplay'),
+        ('Blouse', 'Blouse'),
+        ('Bundled Set', 'Bundled Set'),
+        ('Cardigan & Sweater', 'Cardigan & Sweater'),
+        ('Casual Wear', 'Casual Wear'),
+        ('Compression Wear', 'Compression Wear'),
+        ('Dress', 'Dress'),
+        ('Formal Wear', 'Formal Wear'),
+        ('Graphic Tee', 'Graphic Tee'),
+        ('Hoodie', 'Hoodie'),
+        ('Jacket', 'Jacket'),
+        ('Kids & Baby Wear', 'Kids & Baby Wear'),
+        ('Loungewear', 'Loungewear'),
+        ('Outdoor & Hiking Wear', 'Outdoor & Hiking Wear'),
+        ('Pajamas & Sleepwear', 'Pajamas & Sleepwear'),
+        ('Polo Shirt', 'Polo Shirt'),
+        ('Resort Wear', 'Resort Wear'),
+        ('Scrubs & Medical Wear', 'Scrubs & Medical Wear'),
+        ('Skirt', 'Skirt'),
+        ('Smart Wearables', 'Smart Wearables'),
+        ('Sportswear', 'Sportswear'),
+        ('T-Shirt', 'T-Shirt'),
+        ('Travel Wear', 'Travel Wear'),
+        ('Workwear & Blazer', 'Workwear & Blazer'),
+    ]
 
     customer         = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='transactions')
     amount           = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Total Transaction')
@@ -92,11 +118,10 @@ class Transaction(models.Model):
     payment_method   = models.CharField(max_length=30, choices=PAYMENT_CHOICES, verbose_name='Payment Method')
     discount_used    = models.BooleanField(default=False, verbose_name='Use Discount?')
     frequency        = models.IntegerField(default=1, verbose_name='Purchase Frequency')
-    return_rate      = models.IntegerField(default=0, verbose_name='Return Rate')
     satisfaction     = models.IntegerField(default=5, verbose_name='Customer Satisfaction')
-    time_to_decision = models.IntegerField(default=1, verbose_name='Decision Time (days)')
     notes            = models.TextField(blank=True, verbose_name='Notes')
     created_at       = models.DateTimeField(auto_now_add=True)
+    purchase_category = models.CharField(max_length=50, choices=PURCHASE_CATEGORY_CHOICES, verbose_name='Purchase Category')
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

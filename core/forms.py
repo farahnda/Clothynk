@@ -8,7 +8,7 @@ class CustomerForm(forms.ModelForm):
         fields = [
             'customer_id', 'name', 'age', 'gender', 'income_level',
             'marital_status', 'education_level', 'occupation', 'location',
-            'email', 'phone', 'purchase_category', 'purchase_channel',
+            'email', 'phone', 'purchase_channel',
             'social_media_influence', 'discount_sensitivity', 'device_used',
             'payment_method', 'shipping_preference', 'purchase_intent',
         ]
@@ -24,7 +24,6 @@ class CustomerForm(forms.ModelForm):
             'location':             forms.TextInput(attrs={'class': 'form-control'}),
             'email':                forms.EmailInput(attrs={'class': 'form-control'}),
             'phone':                forms.TextInput(attrs={'class': 'form-control'}),
-            'purchase_category':    forms.TextInput(attrs={'class': 'form-control'}),
             'purchase_channel':     forms.Select(attrs={'class': 'form-select'}),
             'social_media_influence': forms.Select(attrs={'class': 'form-select'}),
             'discount_sensitivity': forms.Select(attrs={'class': 'form-select'}),
@@ -43,16 +42,15 @@ class TransactionForm(forms.ModelForm):
 
     class Meta:
         model = Transaction
-        fields = ['customer', 'amount', 'date', 'payment_method', 'discount_used', 'frequency', 'return_rate', 'satisfaction', 'time_to_decision', 'notes']
+        fields = ['customer', 'amount', 'date', 'payment_method', 'purchase_category', 'discount_used', 'frequency', 'satisfaction', 'notes']
         widgets = {
             'customer':         forms.Select(attrs={'class': 'form-select'}),
             'amount':           forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'payment_method':   forms.Select(attrs={'class': 'form-select'}),
+            'purchase_category': forms.Select(attrs={'class': 'form-select'}),
             'discount_used':    forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'frequency':        forms.NumberInput(attrs={'class': 'form-control'}),
-            'return_rate':      forms.NumberInput(attrs={'class': 'form-control'}),
             'satisfaction':     forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 10}),
-            'time_to_decision': forms.NumberInput(attrs={'class': 'form-control'}),
             'notes':            forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
         }
 

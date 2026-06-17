@@ -123,7 +123,7 @@
                   {% endif %}
               </a>
           </th>
-          <th class="py-3">
+          {% comment %} <th class="py-3">
               <a class="sort-link" data-bs-toggle="tooltip" title="Sort by Frequency"
                  href="?sort={% if sort == 'frequency' %}-frequency{% else %}frequency{% endif %}">
                   Frequency
@@ -135,8 +135,8 @@
                       <i class="bi bi-arrow-down-up text-muted sort-icon"></i>
                   {% endif %}
               </a>
-          </th>
-         <th class="py-3">
+          </th> {% endcomment %}
+         {% comment %} <th class="py-3">
               <a class="sort-link" data-bs-toggle="tooltip" title="Sort by Satisfaction"
                  href="?sort={% if sort == 'satisfaction' %}-satisfaction{% else %}satisfaction{% endif %}">
                   Satisfaction
@@ -162,7 +162,7 @@
                   {% endif %}
               </a>
           </th>
-        </tr>
+        </tr> {% endcomment %}
       </thead>
 
       <tbody>
@@ -195,15 +195,18 @@
             </span>
           </td>
 
-          <td style="font-size:.85rem;">
-            {{ t.payment_method }}
-          </td>
-
+            <td>
+            <span class="badge bg-light fw-semibold"
+                    style="border-radius:6px; color:#6B7280; font-size:.75rem;">
+                {{ t.payment_method }}
+            </span>
+          </td> 
+            {% comment %}
           <td style="font-size:.85rem;">
             {{ t.frequency }}x
-          </td>
+          </td> {% endcomment %}
 
-          <td style="font-size:.85rem;">
+          {% comment %} <td style="font-size:.85rem;">
             {% if t.satisfaction >= 9 %}
               <span class="fw-semibold text-success">{{ t.satisfaction }}/10</span>
             {% elif t.satisfaction >= 7 %}
@@ -213,15 +216,15 @@
             {% else %}
               <span class="fw-semibold text-danger">{{ t.satisfaction }}/10</span>
             {% endif %}
-          </td>
+          </td> {% endcomment %}
 
-          <td class="pe-4" style="font-size:.85rem;">
+          {% comment %} <td class="pe-4" style="font-size:.85rem;">
             {% if t.discount_used %}
               <span class="fw-semibold text-success">Yes</span>
             {% else %}
               <span class="text-muted">—</span>
             {% endif %}
-          </td>
+          </td> {% endcomment %}
 
         </tr>
 

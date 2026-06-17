@@ -3,51 +3,382 @@
 {% block page_title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width:600px">
-  <div class="card-header">{{ title }}</div>
-  <div class="p-4">
-    <form method="post">
-      {% csrf_token %}
-      <div class="row g-3">
-        <div class="col-12">
-          <label class="form-label fw-600">Customer</label>{{ form.customer }}
-        </div>
-        <div class="col-md-6">
-          <label class="form-label fw-600">Amount ($)</label>{{ form.amount }}
-        </div>
-        <div class="col-md-6">
-          <label class="form-label fw-600">Date</label>{{ form.date }}
-        </div>
-        <div class="col-md-6">
-          <label class="form-label fw-600">Payment Method</label>{{ form.payment_method }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-600">Frequency</label>{{ form.frequency }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-600">Return Rate</label>{{ form.return_rate }}
-        </div>
-        <div class="col-md-6">
-          <label class="form-label fw-600">Satisfaction (1-10)</label>{{ form.satisfaction }}
-        </div>
-        <div class="col-md-6">
-          <label class="form-label fw-600">Decision Time (days)</label>{{ form.time_to_decision }}
-        </div>
-        <div class="col-12">
-          <label class="form-label fw-600">Notes</label>{{ form.notes }}
-        </div>
-        <div class="col-12">
-          <div class="form-check">
-            {{ form.discount_used }}
-            <label class="form-check-label">Discount used</label>
+
+<style>
+  /* ===== UNIFORM FORM STYLE ===== */
+  .form-control,
+  .form-select {
+    font-size: 0.8rem !important;
+    font-weight: 500;
+    padding: 0.25rem 0.6rem !important;
+    min-height: 34px;
+    border-radius: 6px !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+  }
+
+  .form-control:focus,
+  .form-select:focus {
+    border-color: #2563EB !important;
+    box-shadow: 0 0 0 0.1rem rgba(37,99,235,0.15) !important;
+  }
+
+  .form-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    margin-bottom: 0.25rem;
+  }
+
+  .discount-item{
+      padding:8px 10px;
+      border-radius:8px;
+      border:1px solid #e5e7eb;
+      background:#fff;
+      cursor:pointer;
+      transition:0.15s;
+  }
+
+  .discount-item:hover{
+      border-color:#93c5fd;
+      background:#f8fafc;
+  }
+
+  .discount-item.active{
+      border:1px solid #2563eb;
+      background:#eef5ff;
+  }
+</style>
+
+<div class="row g-4">
+
+  <!-- FORM -->
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+
+      <div class="card-header bg-white py-3"
+           style="border-top-left-radius:12px;border-top-right-radius:12px;border-bottom:1px solid #f1f5f9;">
+        <h5 class="mb-0 fw-bold text-dark" style="font-size:1rem;">
+          <i class="bi bi-receipt me-2" style="color:#2563EB;"></i>{{ title }}
+        </h5>
+      </div>
+
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="row g-2">
+
+            <div class="col-12 mb-2">
+              <label class="form-label">CUSTOMER</label>
+              {{ form.customer }}
+            </div>
+
+            <!-- LOYALTY BADGE -->
+            <div id="loyalty-box" class="col-12 d-none">
+              <div id="loyalty-card"
+                  class="d-flex justify-content-between align-items-center w-100"
+                  style="padding:0.5rem 0.7rem; border-radius:8px; background:#f1f5f9;">
+
+                <!-- LEFT -->
+                <div class="d-flex align-items-center" style="gap:8px; font-size:0.75rem; font-weight:600;">
+                  <i id="tier-icon" class="bi bi-award-fill"></i>
+                  <span id="tier-text">Bronze</span>
+                </div>
+                <!-- RIGHT BADGE -->
+                <span id="point-text"
+                      style="font-size:0.6rem; padding:0.2rem 0.45rem; border-radius:6px; font-weight:600;">
+                  0 points
+                </span>
+
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-2">
+              <label class="form-label">AMOUNT ($)</label>
+              {{ form.amount }}
+            </div>
+
+            <div class="col-md-6 mb-2">
+              <label class="form-label">DATE</label>
+              {{ form.date }}
+            </div>
+
+            <div class="col-md-6 mb-2">
+              <label class="form-label">PAYMENT METHOD</label>
+              {{ form.payment_method }}
+            </div>
+
+            <div class="col-md-6 mb-2">
+              <label class="form-label">CATEGORY</label>
+              {{ form.purchase_category }}
+            </div>
+
+            <div class="col-md-6 mb-2">
+              <label class="form-label">FREQUENCY</label>
+              {{ form.frequency }}
+            </div>
+
+            <div class="col-md-6 mb-2">
+              <label class="form-label">SATISFACTION (1–10)</label>
+              {{ form.satisfaction }}
+            </div>
+
+            <div class="col-12 mb-2">
+              <label class="form-label">NOTES</label>
+              {{ form.notes }}
+            </div>
+
+            <div id="campaign-box" class="col-12 d-none mt-2">
+
+              <!-- TITLE (tanpa card) -->
+              <div class="fw-semibold mb-2" style="font-size:0.8rem;">
+                Available Discounts
+              </div>
+
+              <!-- LIST -->
+              <div id="campaign-list" class="d-flex flex-column gap-2"></div>
+
+              <!-- TOTAL PREVIEW (tetap rapi minimalis) -->
+              <div style="margin-top:10px; padding-top:10px; border-top:1px dashed #bfdbfe;">
+
+                <div class="d-flex justify-content-between" style="font-size:0.75rem;">
+                  <span class="text-muted">Original</span>
+                  <span id="orig-price">0</span>
+                </div>
+
+                <div class="d-flex justify-content-between" style="font-size:0.75rem;">
+                  <span class="text-muted">Discount</span>
+                  <span id="disc-price" style="color:#2563eb;">0%</span>
+                </div>
+
+                <div class="d-flex justify-content-between fw-semibold" style="font-size:0.8rem;">
+                  <span>Total</span>
+                  <span id="final-price" style="color:#2563eb;">0</span>
+                </div>
+
+              </div>
+
+              <!-- hidden django -->
+              <div class="form-check d-none">
+                {{ form.discount_used }}
+              </div>
+
+            </div>
+
           </div>
-        </div>
+
+          <!-- BUTTON -->
+          <div class="row g-3 mt-4 pt-3 border-top">
+            <div class="col-md-6">
+              <button type="submit"
+                      class="btn w-100 py-2"
+                      style="background:#2563EB;color:#fff;border-radius:6px;font-size:0.85rem;font-weight:500;">
+                Save
+              </button>
+            </div>
+            <div class="col-md-6">
+              <a href="{% url 'transaction_list' %}"
+                 class="btn btn-outline-secondary w-100 py-2"
+                 style="border-radius:6px;font-size:0.85rem;font-weight:500;">
+                Cancel
+              </a>
+            </div>
+          </div>
+        </form>
       </div>
-      <div class="d-flex gap-2 mt-4">
-        <button type="submit" class="btn btn-accent px-4">Save</button>
-        <a href="{% url 'transaction_list' %}" class="btn btn-outline-secondary">Cancel</a>
-      </div>
-    </form>
+    </div>
   </div>
+
+  <!-- INFO PANEL -->
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm"
+         style="border-radius:12px;background:#F8FAFC;position:sticky;top:20px;">
+
+      <div class="card-body p-4">
+
+        <h6 class="fw-bold mb-3" style="font-size:0.95rem;color:#0F172A;">
+          <i class="bi bi-info-circle-fill me-2" style="color:#2563EB;"></i>
+          Transaction Guide
+        </h6>
+
+        <div style="max-height:600px;overflow-y:auto;padding-right:6px;">
+
+          <div class="mb-3">
+            <strong style="font-size:0.75rem;color:#334155;">Frequency</strong>
+            <p class="text-muted mb-0" style="font-size:0.7rem;line-height:1.3;">
+              Jumlah transaksi berulang dari customer dengan metode pembayaran yang sama.
+            </p>
+          </div>
+
+          <div class="mb-3">
+            <strong style="font-size:0.75rem;color:#334155;">Satisfaction</strong>
+            <p class="text-muted mb-0" style="font-size:0.7rem;line-height:1.3;">
+              Skor kepuasan pelanggan dari 1–10 berdasarkan pengalaman transaksi.
+            </p>
+          </div>
+
+          <div class="mb-3">
+            <strong style="font-size:0.75rem;color:#334155;">Discount Used</strong>
+            <p class="text-muted mb-0" style="font-size:0.7rem;line-height:1.3;">
+              Menandakan apakah transaksi menggunakan promo atau tidak.
+            </p>
+          </div>
+
+          <div class="mb-3">
+            <strong style="font-size:0.75rem;color:#334155;">Payment Method</strong>
+            <p class="text-muted mb-0" style="font-size:0.7rem;line-height:1.3;">
+              Metode pembayaran seperti Credit Card, Cash, atau PayPal.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
 </div>
+
+<script>
+const origPriceEl = document.getElementById('orig-price');
+const discPriceEl = document.getElementById('disc-price');
+const finalPriceEl = document.getElementById('final-price');
+
+const customerSelect = document.querySelector('#id_customer');
+const amountInput = document.querySelector('#id_amount');
+const discountCheckbox = document.querySelector('#id_discount_used');
+
+let selectedDiscount = 0;
+let selectedEl = null;
+
+// =====================
+// UPDATE PRICE
+// =====================
+function updatePrice() {
+    let amount = parseFloat(amountInput.value || 0);
+
+    origPriceEl.innerText = amount.toFixed(2);
+
+    if (discountCheckbox.checked && selectedDiscount > 0) {
+        const discounted = amount - (amount * selectedDiscount / 100);
+
+        discPriceEl.innerText = selectedDiscount + "%";
+        finalPriceEl.innerText = discounted.toFixed(2);
+
+        amountInput.dataset.final = discounted.toFixed(2);
+
+    } else {
+        discPriceEl.innerText = "0%";
+        finalPriceEl.innerText = amount.toFixed(2);
+
+        amountInput.dataset.final = amount;
+    }
+}
+
+// =====================
+// CUSTOMER CHANGE
+// =====================
+customerSelect.addEventListener('change', async function () {
+    const customerId = this.value;
+    if (!customerId) return;
+
+    const res = await fetch(`/ajax/customer-loyalty/${customerId}/`);
+    const data = await res.json();
+
+    // LOYALTY UI
+    document.getElementById('loyalty-box').classList.remove('d-none');
+
+    document.getElementById('tier-text').innerText = data.tier.toUpperCase();
+    document.getElementById('point-text').innerText = data.points + " points";
+
+    document.getElementById('tier-icon').style.color = data.color;
+    document.getElementById('loyalty-card').style.borderLeft = "5px solid " + data.color;
+
+    // =====================
+    // CAMPAIGN UI RESET
+    // =====================
+    const campaignBox = document.getElementById('campaign-box');
+    const list = document.getElementById('campaign-list');
+
+    list.innerHTML = "";
+    selectedDiscount = 0;
+    discountCheckbox.checked = false;
+
+    if (selectedEl) {
+        selectedEl.classList.remove('active');
+        selectedEl = null;
+    }
+
+    const campaigns = data.campaigns || [];
+
+    if (campaigns.length > 0) {
+        campaignBox.classList.remove('d-none');
+
+        campaigns.forEach(c => {
+            const el = document.createElement('div');
+
+            // discount item style
+            el.className = "discount-item";
+            el.innerHTML = `
+                <div class="fw-semibold" style="font-size:0.75rem;">
+                    ${c.name}
+                </div>
+                <div style="font-size:0.65rem; color:#2563eb;">
+                    ${c.discount}% OFF - ${c.voucher}
+                </div>
+            `;
+
+            // =====================
+            // CLICK TOGGLE (1x select, 2x unselect)
+            // =====================
+            el.addEventListener('click', function () {
+
+                // kalau klik item yang sama -> unselect
+                if (selectedEl === el) {
+                    el.classList.remove('active');
+                    selectedDiscount = 0;
+                    discountCheckbox.checked = false;
+                    selectedEl = null;
+
+                } else {
+                    // reset sebelumnya
+                    if (selectedEl) selectedEl.classList.remove('active');
+
+                    selectedDiscount = c.discount;
+                    discountCheckbox.checked = true;
+
+                    el.classList.add('active');
+                    selectedEl = el;
+                }
+
+                updatePrice();
+            });
+
+            list.appendChild(el);
+        });
+
+    } else {
+        campaignBox.classList.add('d-none');
+    }
+
+    updatePrice();
+});
+
+// =====================
+// CHECKBOX MANUAL
+// =====================
+discountCheckbox.addEventListener('change', function () {
+    updatePrice();
+});
+
+// =====================
+// AMOUNT LIVE UPDATE
+// =====================
+amountInput.addEventListener('input', function () {
+    updatePrice();
+});
+</script>
+
 {% endblock %}
