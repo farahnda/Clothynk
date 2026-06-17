@@ -17,8 +17,7 @@
     {% for campaign in campaigns %}
     <div class="col-md-6">
         <div class="card h-100 shadow-sm border-0" style="border-radius: 12px;">
-            <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="card-body p-4 d-flex flex-column"> <div class="d-flex justify-content-between align-items-start mb-3">
                     <h6 class="fw-bold mb-0 text-dark" style="font-size: 1.05rem;">{{ campaign.name }}</h6>
                     {% if not campaign.is_active %}
                         <span class="badge" style="background: rgba(220, 53, 69, 0.15); color: #dc3545; font-size:0.7rem;"><i class="bi bi-pause-circle-fill me-1"></i>Inactive</span>
@@ -37,7 +36,6 @@
                     <span class="text-muted" style="font-size:0.75rem;"><i class="bi bi-bullseye me-1"></i>Target: {{ campaign.get_target_tier_display }}</span>
                     <span class="text-muted" style="font-size:0.75rem;"><i class="bi bi-tag me-1"></i>Discount: {{ campaign.discount_percentage }}%</span>
                     {% if campaign.voucher_code %}
-                    <!-- PERUBAHAN: Voucher Code dikembalikan ke warna abu-abu netral -->
                     <span class="badge mono" style="background:#F1F5F9; color:#334155; font-size:0.75rem; font-weight: 700; border: 1px dashed #CBD5E1;">
                         <i class="bi bi-ticket-perforated me-1"></i>{{ campaign.voucher_code }}
                     </span>
@@ -59,26 +57,25 @@
                     </div>
                 </div>
                 
-<div class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top">
-    <small class="text-muted" style="font-size:0.75rem; font-weight: 500;">
-        <i class="bi bi-calendar-event me-1"></i> {{ campaign.start_date|date:"d M Y" }} – {{ campaign.end_date|date:"d M Y" }}
-    </small>
-    <div class="d-flex gap-2">
-        <!-- PERUBAHAN: Ikon dihapus, hanya teks "Detail" -->
-        <a href="{% url 'campaign_detail' campaign.pk %}" 
-           class="btn btn-sm btn-outline-secondary px-3" 
-           style="border-radius:8px; font-weight:500; font-size:0.8rem;">
-           Details
-        </a>
-        
-        <!-- PERUBAHAN: Ikon dihapus, hanya teks "Edit" -->
-        <a href="{% url 'campaign_edit' campaign.pk %}" 
-           class="btn btn-sm px-3" 
-           style="background-color: #2563EB; color: white; border-radius:8px; font-weight:500; font-size:0.8rem;">
-           Edit
-        </a>
-    </div>
-</div>
+                <div class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top">
+                    <small class="text-muted" style="font-size:0.75rem; font-weight: 500;">
+                        <i class="bi bi-calendar-event me-1"></i> {{ campaign.start_date|date:"d M Y" }} – {{ campaign.end_date|date:"d M Y" }}
+                    </small>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'campaign_detail' campaign.pk %}" 
+                           class="btn btn-sm btn-outline-secondary px-3" 
+                           style="border-radius:8px; font-weight:500; font-size:0.8rem;">
+                           Details
+                        </a>
+                        
+                        <a href="{% url 'campaign_edit' campaign.pk %}" 
+                           class="btn btn-sm px-3" 
+                           style="background-color: #2563EB; color: white; border-radius:8px; font-weight:500; font-size:0.8rem;">
+                           Edit
+                        </a>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

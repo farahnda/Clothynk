@@ -56,13 +56,11 @@
 
         <div class="row g-3 align-items-center">
 
-            <!-- Filter Form -->
-            <div class="col-lg-10">
+            <div class="col-lg-8">
                 <form method="get">
-                    <div class="row g-3 align-items-center">
+                    <div class="row g-2 align-items-center">
 
-                        <!-- Search -->
-                        <div class="col-xl-8 col-lg-7">
+                        <div class="col-xl-7 col-lg-6 col-md-12">
                             <input type="text"
                                    name="q"
                                    value="{{ q }}"
@@ -77,8 +75,7 @@
                                    ">
                         </div>
 
-                        <!-- Tier -->
-                        <div class="col-xl-3 col-lg-4 col-md-6">
+                        <div class="col-xl-4 col-lg-4 col-md-10 col-10">
                             <select name="tier"
                                     class="form-select"
                                     style="
@@ -98,8 +95,7 @@
                             </select>
                         </div>
 
-                        <!-- Search Button -->
-                        <div class="col-xl-1 col-lg-1 col-md-6">
+                        <div class="col-xl-1 col-lg-2 col-md-2 col-2">
                             <button type="submit"
                                     class="btn btn-accent w-100 d-flex align-items-center justify-content-center"
                                     style="
@@ -115,18 +111,23 @@
                 </form>
             </div>
 
-            <!-- Add Customer -->
-            <div class="col-lg-2">
-                <a href="{% url 'customer_add' %}"
-                   class="btn btn-accent w-100 d-flex align-items-center justify-content-center"
-                   style="
-                        height:48px;
-                        border-radius:14px;
-                        font-weight:600;
-                   ">
-                    <i class="bi bi-plus-lg me-2"></i>
-                    Add Customer
-                </a>
+            <div class="col-lg-4">
+                <div class="d-flex gap-2 h-100">
+                    <button type="button" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#importCsvModal"
+                            class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center"
+                            style="height:48px; border-radius:14px; font-weight:600;">
+                        <i class="bi bi-cloud-upload me-2"></i>
+                        Import CSV
+                    </button>
+                    <a href="{% url 'customer_add' %}"
+                       class="btn btn-accent w-100 d-flex align-items-center justify-content-center"
+                       style="height:48px; border-radius:14px; font-weight:600;">
+                        <i class="bi bi-plus-lg me-2"></i>
+                        Add Customer
+                    </a>
+                </div>
             </div>
 
         </div>
@@ -142,21 +143,9 @@
           <th class="ps-4 py-3">
               <a class="sort-link"
                 data-bs-toggle="tooltip"
-
-                title="
-                {% if sort == 'name' %}
-                Currently ascending. Click for descending.
-                {% elif sort == '-name' %}
-                Currently descending. Click for ascending.
-                {% else %}
-                Click to sort alphabetically.
-                {% endif %}
-                "
-
+                title="{% if sort == 'name' %}Currently ascending. Click for descending.{% elif sort == '-name' %}Currently descending. Click for ascending.{% else %}Click to sort alphabetically.{% endif %}"
                 href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'name' %}-name{% else %}name{% endif %}">
-
                   Customer
-
                   {% if sort == 'name' %}
                       <i class="bi bi-sort-alpha-down sort-icon"></i>
                   {% elif sort == '-name' %}
@@ -170,11 +159,8 @@
               <a class="sort-link"
                 data-bs-toggle="tooltip"
                 title="Click to sort Customer ID"
-
                 href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'customer_id' %}-customer_id{% else %}customer_id{% endif %}">
-
                   Customer ID
-
                   {% if sort == 'customer_id' %}
                       <i class="bi bi-sort-numeric-down sort-icon"></i>
                   {% elif sort == '-customer_id' %}
@@ -188,11 +174,8 @@
               <a class="sort-link"
                 data-bs-toggle="tooltip"
                 title="Sort by gender"
-
                 href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'gender' %}-gender{% else %}gender{% endif %}">
-
                   Gender
-
                   {% if sort == 'gender' %}
                       <i class="bi bi-arrow-up sort-icon"></i>
                   {% elif sort == '-gender' %}
@@ -206,11 +189,8 @@
               <a class="sort-link"
                 data-bs-toggle="tooltip"
                 title="Sort by location"
-
                 href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'location' %}-location{% else %}location{% endif %}">
-
                   Location
-
                   {% if sort == 'location' %}
                       <i class="bi bi-arrow-up sort-icon"></i>
                   {% elif sort == '-location' %}
@@ -220,16 +200,12 @@
                   {% endif %}
               </a>
           </th>
-          <!-- Purchase Category telah dihapus dari sini -->
           <th>
               <a class="sort-link"
                 data-bs-toggle="tooltip"
                 title="Sort by purchase channel"
-
                 href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'purchase_channel' %}-purchase_channel{% else %}purchase_channel{% endif %}">
-
                   Purchase Channel
-
                   {% if sort == 'purchase_channel' %}
                       <i class="bi bi-arrow-up sort-icon"></i>
                   {% elif sort == '-purchase_channel' %}
@@ -243,11 +219,8 @@
               <a class="sort-link"
                 data-bs-toggle="tooltip"
                 title="Sort by Tier"
-
                 href="?q={{ q }}&tier={{ tier }}&sort={% if sort == 'loyalty__tier' %}-loyalty__tier{% else %}loyalty__tier{% endif %}">
-
                   Tier
-
                   {% if sort == 'loyalty__tier' %}
                       <i class="bi bi-arrow-up sort-icon"></i>
                   {% elif sort == '-loyalty__tier' %}
@@ -277,7 +250,6 @@
           <td><span class="mono text-muted" style="font-size:.8rem">{{ c.customer_id }}</span></td>
           <td style="font-size: 0.85rem;">{{ c.gender }}</td>
           <td style="font-size: 0.85rem;">{{ c.location }}</td>
-          <!-- Kolom isi Purchase Category telah dihapus dari sini -->
           <td style="font-size: 0.85rem;">{{ c.get_purchase_channel_display }}</td>
           <td>
             {% if c.loyalty %}
@@ -295,7 +267,6 @@
           </td>
         </tr>
         {% empty %}
-        <!-- Mengubah colspan dari 8 menjadi 7 -->
         <tr><td colspan="7" class="text-center text-muted py-5">No customers found.</td></tr>
         {% endfor %}
       </tbody>
@@ -303,4 +274,53 @@
   </div>
 </div>
 <div class="mt-3 text-muted" style="font-size:.8rem">Displaying {{ customers|length }} customers</div>
+
+<div class="modal fade" id="importCsvModal" tabindex="-1" aria-labelledby="importCsvModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+      
+      <div class="modal-header border-0 pb-2 pt-4 px-4">
+        <h5 class="modal-title fw-bold text-dark d-flex align-items-center" id="importCsvModalLabel" style="font-size: 1.15rem;">
+            <i class="bi bi-cloud-arrow-up-fill text-primary me-2 fs-4"></i> Import Data Pelanggan
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form action="{% url 'customer_import' %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="modal-body py-2 px-4">
+              <p class="text-muted mb-4" style="font-size: 0.85rem; line-height: 1.5;">
+                  Tambahkan banyak pelanggan sekaligus dengan mengunggah file CSV. Data yang sudah memiliki Customer ID di sistem akan otomatis diperbarui.
+              </p>
+
+              <div class="d-flex align-items-center justify-content-between p-3 mb-4 rounded-3" style="background-color: #f8fafc; border-left: 4px solid #3b82f6;">
+                  <div>
+                      <h6 class="mb-1 fw-bold text-dark" style="font-size: 0.85rem;">Butuh format standar?</h6>
+                      <div class="text-muted" style="font-size: 0.8rem;">Unduh template CSV kami yang sudah disesuaikan.</div>
+                  </div>
+                  <a href="{% url 'download_csv_template' %}" class="btn btn-sm btn-outline-primary fw-semibold bg-white" style="border-radius: 8px; font-size: 0.8rem;">
+                      <i class="bi bi-download me-1"></i> Template
+                  </a>
+              </div>
+
+              <div class="p-4 text-center rounded-4 mb-2" style="border: 2px dashed #cbd5e1; background-color: #f8fafc;">
+                  <i class="bi bi-file-earmark-spreadsheet text-muted mb-2" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                  <h6 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">Pilih file CSV untuk diunggah</h6>
+                  <p class="text-muted mb-3 px-3" style="font-size: 0.8rem;">Hanya menerima format <span class="fw-semibold text-dark">.csv</span></p>
+                  
+                  <input class="form-control form-control-sm mx-auto shadow-sm" type="file" name="csv_file" accept=".csv" required style="max-width: 250px; border-radius: 8px;">
+              </div>
+          </div> 
+          
+          <div class="modal-footer border-0 pt-3 pb-4 px-4 d-flex gap-2">
+              <button type="button" class="btn fw-semibold" style="border-radius: 10px; color: #475569; background: #f1f5f9;" data-bs-dismiss="modal">Batalkan</button>
+              <button type="submit" class="btn btn-primary px-4 fw-semibold shadow-sm" style="border-radius: 10px; background-color: #2563EB;">
+                  Mulai Proses Import
+              </button>
+          </div>
+      </form>
+
+    </div>
+  </div>
+</div>
 {% endblock %}

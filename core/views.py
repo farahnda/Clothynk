@@ -5,10 +5,12 @@ from django.db.models import Sum, Count, Avg, Q
 from django.utils import timezone
 from datetime import timedelta
 from django.http import JsonResponse
+from django.http import HttpResponse
 import json
-
+import csv
 from natsort import natsorted
-
+from django.utils.dateparse import parse_datetime
+from decimal import Decimal
 from .models import Customer, Transaction, LoyaltyProfile, Campaign, PredictionResult
 from .forms import CustomerForm, TransactionForm, CampaignForm
 from .ml import run_prediction, run_all_predictions
@@ -247,6 +249,100 @@ def customer_delete(request, pk):
 
     return redirect('customer_detail', pk=pk)
 
+def import_customer_csv(request):
+    if request.method == 'POST':
+        csv_file = request.FILES.get('csv_file')
+        
+        if not csv_file or not csv_file.name.endswith('.csv'):
+            messages.error(request, 'Mohon unggah file dengan format .csv yang valid.')
+            return redirect('customer_list')
+
+        try:
+            # Decode file dan bersihkan karakter BOM tersembunyi
+            decoded_file = csv_file.read().decode('utf-8-sig').splitlines()
+            
+            # Deteksi pemisah otomatis
+            delimiter = ';' if decoded_file and ';' in decoded_file[0] else ','
+            reader = csv.DictReader(decoded_file, delimiter=delimiter)
+            
+            success_count = 0
+            error_count = 0
+            
+            for raw_row in reader:
+                # Bersihkan spasi pada nama kolom (header) dan isi data
+                row = {str(k).strip(): str(v).strip() for k, v in raw_row.items() if k is not None}
+                
+                customer_id = row.get('customer_id')
+                if not customer_id:
+                    error_count += 1
+                    continue
+
+                try:
+                    # Proses simpan atau update sesuai dengan field model asli
+                    Customer.objects.update_or_create(
+                        customer_id=customer_id, 
+                        defaults={
+                            'name': row.get('name', ''),
+                            'age': int(row.get('age', 0)) if row.get('age') and row.get('age').isdigit() else 0,
+                            'gender': row.get('gender', ''),
+                            'income_level': row.get('income_level', ''),
+                            'marital_status': row.get('marital_status', ''),
+                            'education_level': row.get('education_level', ''),
+                            'occupation': row.get('occupation', ''),
+                            'location': row.get('location', ''),
+                            'email': row.get('email', ''),
+                            'phone': row.get('phone', ''),  # Kolom phone tetap dipertahankan
+                            'purchase_channel': row.get('purchase_channel', ''),
+                            'social_media_influence': row.get('social_media_influence', ''),
+                            'discount_sensitivity': row.get('discount_sensitivity', ''),
+                            'device_used': row.get('device_used', ''),  # Kolom device_used
+                            'payment_method': row.get('payment_method', ''),
+                            'shipping_preference': row.get('shipping_preference', ''),
+                            'purchase_intent': row.get('purchase_intent', ''),
+                        }
+                    )
+                    success_count += 1
+                except Exception as e:
+                    error_count += 1
+                    print(f"GAGAL SIMPAN ID {customer_id}: {e}")
+
+            messages.success(request, f'Import Selesai! Berhasil: {success_count} data. Gagal/Dilewati: {error_count} data.')
+        
+        except Exception as e:
+            messages.error(request, f'Terjadi kesalahan saat memproses CSV: {e}')
+
+    return redirect('customer_list')
+
+
+def download_csv_template(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="Template_Import_Customer.csv"'
+    
+    # Menghindari masalah encoding karakter saat dibuka di Excel
+    response.write('\ufeff'.encode('utf8'))
+    
+    writer = csv.writer(response)
+    
+    # Menuliskan susunan header yang tepat berdasarkan field model Anda
+    writer.writerow([
+        'customer_id', 'name', 'age', 'gender', 'income_level', 
+        'marital_status', 'education_level', 'occupation', 'location', 
+        'email', 'phone', 'purchase_channel', 'social_media_influence', 
+        'discount_sensitivity', 'device_used', 'payment_method', 
+        'shipping_preference', 'purchase_intent'
+    ])
+    
+    # Menuliskan satu baris contoh data yang valid
+    writer.writerow([
+        '01-001-CUST', 'John Doe', '25', 'Male', 'Middle', 
+        'Single', "Bachelor's", 'Middle', 'Jakarta', 
+        'john@example.com', '081234567890', 'Online', 'Medium', 
+        'Somewhat Sensitive', 'Mobile', 'Credit Card', 
+        'Standard', 'Need-based'
+    ])
+    
+    return response
+
 @login_required
 def transaction_list(request):
     # Tangkap parameter sort dari URL, default ke '-date' (terbaru)
@@ -368,6 +464,106 @@ def transaction_add(request):
     #     messages.success(request, f'Transaction ${txn.amount:,.2f} added successfully!')
     #     return redirect('transaction_list')
     # return render(request, 'core/transaction_form.html', {'form': form, 'title': 'Add Transaction'})
+
+def import_transaction_csv(request):
+    if request.method == 'POST':
+        csv_file = request.FILES.get('csv_file')
+        
+        if not csv_file or not csv_file.name.endswith('.csv'):
+            messages.error(request, 'Mohon unggah file dengan format .csv yang valid.')
+            return redirect('transaction_list')
+
+        try:
+            decoded_file = csv_file.read().decode('utf-8-sig').splitlines()
+            delimiter = ';' if decoded_file and ';' in decoded_file[0] else ','
+            reader = csv.DictReader(decoded_file, delimiter=delimiter)
+            
+            success_count = 0
+            error_count = 0
+            
+            for raw_row in reader:
+                row = {str(k).strip(): str(v).strip() for k, v in raw_row.items() if k is not None}
+                
+                # 1. Cari Customer berdasarkan ID di CSV
+                customer_id_csv = row.get('customer_id')
+                if not customer_id_csv:
+                    error_count += 1
+                    continue
+                
+                customer_obj = Customer.objects.filter(customer_id=customer_id_csv).first()
+                
+                # Jika customer tidak ditemukan di database, lewati baris ini
+                if not customer_obj:
+                    print(f"Customer ID {customer_id_csv} tidak ditemukan.")
+                    error_count += 1
+                    continue
+
+                try:
+                    # 2. Parsing Data Khusus (Desimal, Boolean, Tanggal)
+                    amount_val = Decimal(row.get('amount', '0'))
+                    freq_val = int(row.get('frequency', 1))
+                    sat_val = int(row.get('satisfaction', 5))
+                    
+                    # Konversi string 'true', 'yes', '1' menjadi Boolean True
+                    discount_str = row.get('discount_used', '').lower()
+                    is_discount = discount_str in ['true', 'yes', '1', 'y']
+                    
+                    # 3. Buat Transaksi Baru
+                    new_transaction = Transaction(
+                        customer=customer_obj,
+                        amount=amount_val,
+                        payment_method=row.get('payment_method', ''),
+                        discount_used=is_discount,
+                        frequency=freq_val,
+                        satisfaction=sat_val,
+                        notes=row.get('notes', ''),
+                        purchase_category=row.get('purchase_category', '')
+                    )
+                    
+                    # Cek jika ada tanggal khusus di CSV (format YYYY-MM-DD HH:MM:SS)
+                    date_str = row.get('date')
+                    if date_str:
+                        parsed_date = parse_datetime(date_str)
+                        if parsed_date:
+                            new_transaction.date = parsed_date
+                            
+                    new_transaction.save()
+                    success_count += 1
+                    
+                except Exception as e:
+                    error_count += 1
+                    print(f"GAGAL SIMPAN TRANSAKSI UNTUK {customer_id_csv}: {e}")
+
+            messages.success(request, f'Import Selesai! Berhasil: {success_count} transaksi. Dilewati/Gagal: {error_count} baris.')
+        
+        except Exception as e:
+            messages.error(request, f'Terjadi kesalahan saat memproses CSV: {e}')
+
+    return redirect('transaction_list')
+
+
+def download_transaction_template(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="Template_Import_Transaction.csv"'
+    response.write('\ufeff'.encode('utf8'))
+    
+    writer = csv.writer(response)
+    
+    # Header
+    writer.writerow([
+        'customer_id', 'amount', 'date', 'payment_method', 
+        'discount_used', 'frequency', 'satisfaction', 
+        'purchase_category', 'notes'
+    ])
+    
+    # Contoh Data
+    writer.writerow([
+        '01-001-CUST', '150000.00', '2026-06-17 10:00:00', 'Credit Card', 
+        'Yes', '1', '5', 
+        'Casual Wear', 'Pembelian pertama diskon member'
+    ])
+    
+    return response
 
 # ─── LOYALTY ─────────────────────────────────────────────────────────────────
 @login_required
